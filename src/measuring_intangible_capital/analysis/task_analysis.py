@@ -7,7 +7,7 @@ import pytask
 
 from measuring_intangible_capital.analysis.model import fit_logit_model, load_model
 from measuring_intangible_capital.analysis.predict import predict_prob_by_age
-from measuring_intangible_capital.config import BLD, GROUPS, SRC
+from measuring_intangible_capital.config import BLD, SRC
 from measuring_intangible_capital.utilities import read_yaml
 
 fit_model_deps = {
@@ -28,20 +28,20 @@ def task_fit_model_python(
     model.save(produces)
 
 
-for group in GROUPS:
-    predict_deps = {
-        "data": BLD / "python" / "data" / "data_clean.csv",
-        "model": BLD / "python" / "models" / "model.pickle",
-    }
+# for group in GROUPS:
+#     predict_deps = {
+#         "data": BLD / "python" / "data" / "data_clean.csv",
+#         "model": BLD / "python" / "models" / "model.pickle",
+#     }
 
-    @pytask.task(id=group)
-    def task_predict_python(
-        group=group,
-        depends_on=predict_deps,
-        produces=BLD / "python" / "predictions" / f"{group}.csv",
-    ):
-        """Predict based on the model estimates (Python version)."""
-        model = load_model(depends_on["model"])
-        data = pd.read_csv(depends_on["data"])
-        predicted_prob = predict_prob_by_age(data, model, group)
-        predicted_prob.to_csv(produces, index=False)
+#     @pytask.task(id=group)
+#     def task_predict_python(
+#         group=group,
+#         depends_on=predict_deps,
+#         produces=BLD / "python" / "predictions" / f"{group}.csv",
+#     ):
+#         """Predict based on the model estimates (Python version)."""
+#         model = load_model(depends_on["model"])
+#         data = pd.read_csv(depends_on["data"])
+#         predicted_prob = predict_prob_by_age(data, model, group)
+#         predicted_prob.to_csv(produces, index=False)

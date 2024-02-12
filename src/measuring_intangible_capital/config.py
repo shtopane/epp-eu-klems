@@ -5,7 +5,7 @@ SRC = Path(__file__).parent.resolve()
 BLD = SRC.joinpath("..", "..", "bld").resolve()
 
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
-EU_KLEMS_DATA_DOWNLOAD_PATH = SRC.joinpath("data").resolve()
+EU_KLEMS_DATA_DOWNLOAD_PATH = BLD.joinpath("original_data").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()

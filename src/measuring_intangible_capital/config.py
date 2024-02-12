@@ -4,13 +4,17 @@ from pathlib import Path
 SRC = Path(__file__).parent.resolve()
 BLD = SRC.joinpath("..", "..", "bld").resolve()
 
-DATA = SRC.joinpath("..", "..", "data").resolve()
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
+EU_KLEMS_DATA_DOWNLOAD_PATH = SRC.joinpath("data").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 # EL is Greece
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
+
+# Create sub directories for every country
+for country_code in COUNTRY_CODES:
+  Path(EU_KLEMS_DATA_DOWNLOAD_PATH / country_code).mkdir(parents=True, exist_ok=True)
 
 __all__ = ["BLD", "SRC", "TEST_DIR"]

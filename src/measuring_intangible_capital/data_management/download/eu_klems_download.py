@@ -37,10 +37,10 @@ def get_urls_file_names_by_country(
                 country_urls.append(current_href)
                 # example url:
                 # https://www.dropbox.com/s/5usiqokdj2orzlv/SK_intangible%20analytical.xlsx?dl=1
-                # split by SK, then take the second part, and remove the "?dl=1" part
-                file_name = country_code + current_href.split(country_code)[1].strip(
+                # end result should be "intangible_analytical.xlsx"
+                file_name = current_href.split(country_code)[1].strip(
                     "?dl=1"
-                )
+                )[1:]
                 file_name = file_name.replace("%20", "_")
                 file_names.append(file_name)
 

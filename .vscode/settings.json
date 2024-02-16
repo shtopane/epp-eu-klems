@@ -1,8 +1,13 @@
 {
   "cSpell.words": [
+    "astype",
+    "dropna",
+    "Dtype",
     "KLEMS",
+    "MARKT",
     "nace",
     "OIPP",
-    "pytask"
+    "pytask",
+    "renamend"
   ]
 }

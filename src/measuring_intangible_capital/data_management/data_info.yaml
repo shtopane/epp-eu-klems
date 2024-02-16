@@ -3,13 +3,12 @@ data_names: [capital_accounts, national_accounts] # which files to read from eac
 sheets_to_read:
   capital_accounts: ['I_Soft_DB', 'I_RD', 'I_OIPP']
   national_accounts: ['VA_CP']
-categorical_columns: [nace_r2_code, 'geo_code']
+categorical_columns: ['var', 'nace_r2_code', 'geo_code']
 columns_to_drop:
  - geo_name
- - var
+ - nace_r2_name
 column_rename_mapping:
   var: variable
   nace_r2_code: industry_code
-  nace_r2_name: industry_name
   geo_code: country_code
   geo_name: country_name

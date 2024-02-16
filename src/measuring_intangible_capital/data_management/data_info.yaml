@@ -1,14 +1,43 @@
 ---
-data_names: [capital_accounts, national_accounts] # which files to read from each country folder
+data_names: [intangible_analytical, national_accounts] # which files to read from each country folder
 sheets_to_read:
-  capital_accounts: ['I_Soft_DB', 'I_RD', 'I_OIPP']
+  intangible_analytical_detailed: [
+    'I_Soft_DB',
+    'I_RD', 
+    'I_OIPP', 
+    'I_NFP', 
+    'I_Design', 
+    'I_OrgCap', 
+    'I_Brand', 
+    'I_Train']
+  intangible_analytical_aggregate: [
+    'I_Soft_DB',
+    'I_Innovprop', 
+    'I_EconComp']
   national_accounts: ['VA_CP']
 categorical_columns: ['var', 'nace_r2_code', 'geo_code']
 columns_to_drop:
  - geo_name
  - nace_r2_name
+variable_name_mapping:
+  # Aggregate components
+  I_Innovprop: intellectual_property
+  I_EconComp: economic_competencies
+  # Computerized Information
+  I_Soft_DB: software_and_databases
+  I_RD: research_and_development
+  
+  # Intangible Assets national accounts
+  I_OIPP: entertainment_and_artistic
+  I_NFP: new_financial_product
+  I_Design: design
+
+  # Economic competencies
+  I_OrgCap: organizational_capital
+  I_Brand: brand
+  I_Train: training
 column_rename_mapping:
-  var: variable
+  var: investment_type
   nace_r2_code: industry_code
   geo_code: country_code
   geo_name: country_name

@@ -2,6 +2,7 @@ from pathlib import Path
 import urllib
 from bs4 import BeautifulSoup
 from pytask import task
+import pytask
 
 from measuring_intangible_capital.data_management.download.eu_klems_download import (
     get_eu_klems_download_page,
@@ -16,7 +17,7 @@ eu_klems_download_deps = {"scripts": Path("eu_klems_download.py")}
 eu_klems_download_page: BeautifulSoup = get_eu_klems_download_page()
 
 for country_code in COUNTRY_CODES:
-
+    @pytask.mark.persist 
     @task(id=country_code)
     def task_eu_klems_download(
         page=eu_klems_download_page,

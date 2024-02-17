@@ -159,22 +159,22 @@ def _rename_investment_category(sr: pd.Series, category_names: dict) -> pd.Serie
     """
     return sr.cat.rename_categories(category_names)
 
-data_info: dict = read_yaml(SRC / "data_management" / "data_info.yaml")
-current_country_code = "AT"
-industry_code_national_accounts = "TOT"
-industry_code_capital_accounts = "MARKT"
+# data_info: dict = read_yaml(SRC / "data_management" / "data_info.yaml")
+# current_country_code = "AT"
+# industry_code_national_accounts = "TOT"
+# industry_code_capital_accounts = "MARKT"
 
-#for current_country_code in COUNTRY_CODES:
-capital_accounts_dfs, national_accounts_dfs = read_data(data_info, current_country_code)
+# #for current_country_code in COUNTRY_CODES:
+# capital_accounts_dfs, national_accounts_dfs = read_data(data_info, current_country_code)
 
-print(50*"-" + f"Country: {current_country_code}" + 50*"-")
+# print(50*"-" + f"Country: {current_country_code}" + 50*"-")
 
-capital_account_df_merged = clean_and_reshape_eu_klems(capital_accounts_dfs, data_info)
-national_account_df_merged = clean_and_reshape_eu_klems(national_accounts_dfs, data_info)
-print(f"Investment by type 2006: {capital_account_df_merged.loc[industry_code_capital_accounts, 2006, :]}")
-# print(national_account_df_merged.loc[industry_code_national_accounts, 2006, current_country_code])
-gdp_at_2006 = national_account_df_merged.loc[industry_code_national_accounts, 2006, current_country_code].item()
-intangible_investment_at_2006 = capital_account_df_merged.loc[industry_code_capital_accounts, 2006, current_country_code].sum(min_count=1)
-print(f"GVA TOT 2006: {gdp_at_2006}")
-print(f"Intangible investment 2006: {intangible_investment_at_2006}")
-print(f"% of GVA: {round((intangible_investment_at_2006/gdp_at_2006)*100, 2)}")
+# capital_account_df_merged = clean_and_reshape_eu_klems(capital_accounts_dfs, data_info)
+# national_account_df_merged = clean_and_reshape_eu_klems(national_accounts_dfs, data_info)
+# print(f"Investment by type 2006: {capital_account_df_merged.loc[industry_code_capital_accounts, 2006, :]}")
+# # print(national_account_df_merged.loc[industry_code_national_accounts, 2006, current_country_code])
+# gdp_at_2006 = national_account_df_merged.loc[industry_code_national_accounts, 2006, current_country_code].item()
+# intangible_investment_at_2006 = capital_account_df_merged.loc[industry_code_capital_accounts, 2006, current_country_code].sum(min_count=1)
+# print(f"GVA TOT 2006: {gdp_at_2006}")
+# print(f"Intangible investment 2006: {intangible_investment_at_2006}")
+# print(f"% of GVA: {round((intangible_investment_at_2006/gdp_at_2006)*100, 2)}")

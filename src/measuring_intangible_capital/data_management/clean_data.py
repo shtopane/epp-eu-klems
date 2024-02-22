@@ -89,7 +89,6 @@ def _clean_data(data: pd.DataFrame, data_info: dict) -> pd.DataFrame:
 
     """
     data = data.drop(columns=data_info["columns_to_drop"])
-    data = data.dropna()
 
     for cat_col in data_info["categorical_columns"]:
         data[cat_col] = data[cat_col].astype(pd.CategoricalDtype())

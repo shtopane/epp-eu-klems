@@ -36,8 +36,11 @@ variable_name_mapping:
   I_OrgCap: organizational_capital
   I_Brand: brand
   I_Train: training
+
+  # National accounts
+  VA_CP: gdp
 column_rename_mapping:
-  var: investment_type
+  var: variable_name
   nace_r2_code: industry_code
   geo_code: country_code
   geo_name: country_name

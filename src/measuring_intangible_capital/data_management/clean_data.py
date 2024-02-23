@@ -65,9 +65,9 @@ def clean_and_reshape_eu_klems(
 
     data_merged.index = data_merged.index.astype(pd.CategoricalDtype())
 
-    data_merged["investment_type"] = _rename_investment_category(data_merged["investment_type"], data_info["variable_name_mapping"])
+    data_merged["variable_name"] = _rename_variable_category(data_merged["variable_name"], data_info["variable_name_mapping"])
     
-    data_pivot = data_merged.pivot_table("investment_level", index=["industry_code", "year", "country_code"], columns="investment_type", observed=True)
+    data_pivot = data_merged.pivot_table("investment_level", index=["industry_code", "year", "country_code"], columns="variable_name", observed=True)
     data_pivot = data_pivot.round(3)
    
     return data_pivot
@@ -102,7 +102,7 @@ def _clean_data(data: pd.DataFrame, data_info: dict) -> pd.DataFrame:
 
 def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
     """Concatenate all sheets of data into one DataFrame.
-    Sets the investment_type column to categorical type.
+    Sets the variable_name column to categorical type.
     Args:
         dfs (list[pd.DataFrame]): The list of data frames to concatenate.
     
@@ -112,7 +112,7 @@ def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
     concatenated = pd.concat(dfs)
     # Category type is not preserved when concatenating dataframes
     # @see https://stackoverflow.com/questions/45639350/retaining-categorical-dtype-upon-dataframe-concatenation
-    concatenated["investment_type"] = concatenated["investment_type"].astype(
+    concatenated["variable_name"] = concatenated["variable_name"].astype(
         pd.CategoricalDtype()
     )
 
@@ -139,14 +139,40 @@ def _transform_years_columns(
         value_vars=years_as_str,
         value_name=value_name,
         var_name=var_name,
-        id_vars=["investment_type", "country_code"],
+        id_vars=["variable_name", "country_code"],
         ignore_index=False,
     )
 
     return data
 
-def _rename_investment_category(sr: pd.Series, category_names: dict) -> pd.Series:
-    """Rename investment category.
+def _rename_variable_category(sr: pd.Series, category_names: dict) -> pd.Series:
+    """Rename variable_name category.
+    When we read a data set the variable_name is the name of data set.
+    For capital accounts for example we read I_Soft_DB, which is computer software and databases.
+    For national accounts we read VA_CP which is value we use as GDP here.
+    This function renames this crude names to more descriptive ones.
+
+    The rename dict can be seen in data_info.yaml file.
+    ### Aggregate components
+    I_Innovprop: intellectual_property
+    I_EconComp: economic_competencies
+    
+    ### Computerized Information
+    I_Soft_DB: software_and_databases
+    I_RD: research_and_development
+    
+    ### Intangible Assets national accounts
+    I_OIPP: entertainment_and_artistic
+    I_NFP: new_financial_product
+    I_Design: design
+
+    ### Economic competencies
+    I_OrgCap: organizational_capital
+    I_Brand: brand
+    I_Train: training
+
+    ### National accounts
+    VA_CP: gdp
 
     Args:
         sr (pd.Series): the series to rename

@@ -1,56 +1,67 @@
 """Functions plotting results."""
 
 import plotly.express as px
-import plotly.graph_objects as go
 
+import pandas as pd
+import math
 
-def plot_regression_by_age(data, data_info, predictions, group):
-    """Plot regression results by age.
+from measuring_intangible_capital.config import COUNTRY_COLOR_MAP
+
+def plot_share_intangibles_all_countries(df: pd.DataFrame):
+    """Create Figure 1: Share Intangible for All Countries (1995-2006)
 
     Args:
-        data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in data_info.yaml. The
-            following keys can be accessed:
-            - 'outcome': Name of dependent variable column in data
-            - 'outcome_numerical': Name to be given to the numerical version of outcome
-            - 'columns_to_drop': Names of columns that are dropped in data cleaning step
-            - 'categorical_columns': Names of columns that are converted to categorical
-            - 'column_rename_mapping': Old and new names of columns to be renamend,
-                stored in a dictionary with design: {'old_name': 'new_name'}
-            - 'url': URL to data set
-        predictions (pandas.DataFrame): Model predictions for different age values.
-        group (str): Categorical column in data set. We create predictions for each
-            unique value in column data[group]. Cannot be 'age' or 'smoke'.
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
 
     Returns:
-        plotly.graph_objects.Figure: The figure.
-
+        Figure: the plotly figure
     """
-    plot_data = predictions.melt(
-        id_vars="age",
-        value_vars=predictions.columns,
-        value_name="prediction",
-        var_name=group,
-    )
-
-    outcomes = data[data_info["outcome_numerical"]]
-
     fig = px.line(
-        plot_data,
-        x="age",
-        y="prediction",
-        color=group,
-        labels={"age": "Age", "prediction": "Probability of Smoking"},
+        df,
+        x="year",
+        y="share_intangible",
+        color="country_code",
+        line_group="country_code",
+        hover_name="country_code",
+        color_discrete_map=COUNTRY_COLOR_MAP,
     )
 
-    fig.add_traces(
-        go.Scatter(
-            x=data["age"],
-            y=outcomes,
-            mode="markers",
-            marker_color="black",
-            marker_opacity=0.1,
-            name="Data",
+    # Add markers to the line plot
+    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
+
+    # Get the years from the DataFrame
+    years = df["year"].unique()
+    start_year = years[0]
+    end_year = years[-1]
+
+    # Get the max of share_intangible from the DataFrame
+    max_share_intangible = df["share_intangible"].max()
+
+    # Update the layout of the figure
+    fig.update_layout(
+        title=f"Share Intangible for All Countries ({start_year}-{end_year})",
+        xaxis_title="Year",
+        yaxis_title="",
+        plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+        xaxis=dict(
+            tickmode="array",  # Show every year
+            tickvals=years,  # Array of years from the DataFrame
+            showgrid=False,  # No grid for the x-axis
+        ),
+        yaxis=dict(
+            range=[
+                1,
+                math.ceil(max_share_intangible),
+            ],  # Range from 1 to the max of share_intangible
+            gridcolor="gray",  # Only horizontal grid lines
+        ),
+        legend=dict(
+            orientation="h",  # Horizontal orientation
+            yanchor="top",
+            y=-0.2,  # Adjust this value to move the legend up or down
+            xanchor="center",
+            x=0.5,  # Center the legend
         ),
     )
+
     return fig

@@ -7,11 +7,19 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
 EU_KLEMS_DATA_DOWNLOAD_PATH = BLD.joinpath("original_data").resolve()
+DATA_CLEAN_PATH = BLD.joinpath("python", "data_clean").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
+# Shared variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
+PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
+COUNTRY_COLOR_MAP = dict(zip(COUNTRY_CODES, PLOT_COLORS_BY_COUNTRY))
+
+
+CAPITAL_ACCOUNT_INDUSTRY_CODE = "MARKT"
+NATIONAL_ACCOUNT_INDUSTRY_CODE = "TOT"
 
 # Create sub directories for every country in the bld folder
 for country_code in COUNTRY_CODES:

@@ -1,15 +1,26 @@
 {
   "cSpell.words": [
     "astype",
+    "darkgray",
     "dataframes",
     "dropna",
     "Dtype",
     "dtypes",
+    "figsize",
     "KLEMS",
+    "labelbottom",
+    "lightsteelblue",
     "MARKT",
     "nace",
+    "ncol",
     "OIPP",
     "pytask",
-    "renamend"
+    "renamend",
+    "royalblue",
+    "xaxis",
+    "xlabel",
+    "xticks",
+    "ylabel",
+    "ylim"
   ]
 }

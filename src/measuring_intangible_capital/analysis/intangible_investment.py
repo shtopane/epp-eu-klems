@@ -5,9 +5,10 @@ import pandas as pd
 from measuring_intangible_capital.config import (
     CAPITAL_ACCOUNT_INDUSTRY_CODE,
     DATA_CLEAN_PATH,
+    INTANGIBLE_AGGREGATE_CATEGORIES,
+    INTANGIBLE_AGGREGATE_CATEGORIES_TYPE,
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
-
 
 def _calculate_share_of_intangible_investment(
     intangible_investment: pd.Series, gdp: pd.Series
@@ -24,6 +25,31 @@ def _calculate_share_of_intangible_investment(
     """
     return round((intangible_investment / gdp) * 100, 3)
 
+def _aggregate_intangible_investment(df: pd.DataFrame, year: int, mode: INTANGIBLE_AGGREGATE_CATEGORIES_TYPE) -> pd.DataFrame:
+    """Aggregate the total market intangible investment data set for a given year.
+    Categories are: computerized_information, innovative_property, economic_competencies
+    Sum up sub-categories which belong to the aggregate category.
+    Ex: computerized_information - software_and_databases, research_and_development
+    
+    Args:
+        df (pd.DataFrame): The intangible investment data set.
+
+    Returns:
+        pd.DataFrame: The aggregated intangible investment data set.
+
+    """
+    columns = None
+
+    if mode == "computerized_information":
+        columns = ["software_and_databases", "research_and_development"]
+    elif mode == "innovative_property":
+        columns = ["entertainment_and_artistic", "new_financial_product", "design"]
+    elif mode == "economic_competencies":
+        columns = ["organizational_capital", "brand", "training"]
+    else:
+        raise ValueError("Invalid mode")
+    
+    return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][columns].sum(axis=1)
 
 def get_country_total_gdp_investment(
     country_code: str, years: range
@@ -55,7 +81,6 @@ def get_country_total_gdp_investment(
 
     return capital_accounts_for_years, national_accounts_for_years
 
-
 def get_share_of_intangible_investment_per_gdp(
     capital_accounts_for_years: pd.DataFrame, national_accounts_for_years: pd.DataFrame
 ) -> pd.DataFrame:
@@ -85,12 +110,24 @@ def get_share_of_intangible_investment_per_gdp(
     data_merged.reset_index(inplace=True)
     return data_merged
 
+def get_intangible_investment_aggregate_types(capital_accounts: pd.DataFrame, gdp: pd.Series, year: int) -> pd.DataFrame:
+    """Calculate the share of intangible investment for each aggregate category for a given year.
+    For each category, calculate the share of intangible investment of GDP.
+    Categories are: computerized_information, innovative_property, economic_competencies
 
-# year_range = range(1995, 2007)
-
-# dfs_merged = []
-
-# for country_code in COUNTRY_CODES:
-#     capital_accounts_for_years, national_accounts_for_years = get_country_total_gdp_investment(country_code, year_range)
-#     data_merged = get_share_of_intangible_investment_per_gdp(capital_accounts_for_years, national_accounts_for_years)
-#     dfs_merged.append(data_merged)
+    Args:
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
+        gdp (pd.Series): The GDP of a given country.
+        year (int): The year for which to calculate the share of intangible investment.
+    
+    Returns:
+        pd.DataFrame: The share of intangible investment for each aggregate category.
+    """
+    df = pd.DataFrame()
+     
+    for column in INTANGIBLE_AGGREGATE_CATEGORIES:
+        df[column] = _calculate_share_of_intangible_investment(
+            _aggregate_intangible_investment(capital_accounts, year, column),
+            gdp
+        )
+    return df

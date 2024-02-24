@@ -1,6 +1,7 @@
 """All the general configuration of the project."""
 
 from pathlib import Path
+from typing import Literal
 
 SRC = Path(__file__).parent.resolve()
 BLD = SRC.joinpath("..", "..", "bld").resolve()
@@ -14,9 +15,16 @@ PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 # Shared variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
+COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
 COUNTRY_COLOR_MAP = dict(zip(COUNTRY_CODES, PLOT_COLORS_BY_COUNTRY))
+INTANGIBLE_AGGREGATE_CATEGORIES = [
+    "computerized_information",
+    "innovative_property",
+    "economic_competencies",
+]
 
+INTANGIBLE_AGGREGATE_CATEGORIES_TYPE = Literal['computerized_information', 'innovative_property', 'economic_competencies']
 
 CAPITAL_ACCOUNT_INDUSTRY_CODE = "MARKT"
 NATIONAL_ACCOUNT_INDUSTRY_CODE = "TOT"

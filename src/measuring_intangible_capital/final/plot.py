@@ -5,7 +5,7 @@ import plotly.express as px
 import pandas as pd
 import math
 
-from measuring_intangible_capital.config import COUNTRY_COLOR_MAP, PLOT_COLORS_BY_COUNTRY
+from measuring_intangible_capital.config import COUNTRY_COLOR_MAP, INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
 from measuring_intangible_capital.utilities import add_country_name
 
 def plot_share_intangibles_all_countries(df: pd.DataFrame):
@@ -77,8 +77,8 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
         Figure: the plotly figure
     """
     df["country_name"] = add_country_name(df)
-    df_melt = df.melt(id_vars='country_name', value_vars=['computerized_information', 'innovative_property', 'economic_competencies'], var_name='variable', value_name='value')
-    fig = px.bar(df_melt, x='country_name', y='value', color='variable', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY)
+    df_melt = df.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='variable', value_name='value')
+    fig = px.bar(df_melt, x='country_name', y='value', color='variable', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
 
     # Update the layout of the figure
     fig.update_layout(

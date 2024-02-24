@@ -12,8 +12,9 @@ plot_share_intangible_of_gdp_aggregate_2006_deps = {
 }
 
 def task_plot_share_intangible_of_gdp_aggregate_2006(depends_on = plot_share_intangible_of_gdp_aggregate_2006_deps, plot_save_path = BLD / "figures" / "shares_intangible_investment_gdp_aggregate_2006.png"):
-    """Plot share of intangible investment as percent of GDP for all years and countries.
-    Save the plot as png file in the figures folder.
+    """Plot the share of intangible investment of GDP for each country and aggregate category for 2006.
+    Each category is: computerized_information, innovative_property, economic_competencies
+    Save the plot to the given path.
     """
     df = pd.read_pickle(depends_on["data"])
     fig = plot_share_intangible_of_gdp_by_type(df)

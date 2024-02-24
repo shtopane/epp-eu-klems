@@ -1,6 +1,9 @@
 """Utilities used in various parts of the project."""
 
+import pandas as pd
 import yaml
+
+from measuring_intangible_capital.config import COUNTRIES, COUNTRY_CODES
 
 
 def read_yaml(path):
@@ -23,3 +26,18 @@ def read_yaml(path):
             )
             raise ValueError(info) from error
     return out
+
+def add_country_name(df: pd.DataFrame) -> pd.Series:
+    """Add country name to a data frame based on country codes.
+
+    Args:
+        df (pd.DataFrame): The data frame.
+
+    Returns:
+        pd.Series: The data frame with country name added.
+
+    """
+    if "country_code" not in df.columns:
+        raise ValueError("The data frame does not contain a column 'country_code'.")
+    
+    return df["country_code"].map(dict(zip(COUNTRY_CODES, COUNTRIES)))

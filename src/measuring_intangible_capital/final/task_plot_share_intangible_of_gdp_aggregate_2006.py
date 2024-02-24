@@ -12,7 +12,7 @@ plot_share_intangible_of_gdp_aggregate_2006_deps = {
 }
 
 def task_plot_share_intangible_of_gdp_aggregate_2006(depends_on = plot_share_intangible_of_gdp_aggregate_2006_deps, plot_save_path = BLD / "figures" / "shares_intangible_investment_gdp_aggregate_2006.png"):
-    """Plot the share of intangible investment of GDP for each country and aggregate category for 2006.
+    """Figure 2: Plot the share of intangible investment of GDP for each country and aggregate category for 2006.
     Each category is: computerized_information, innovative_property, economic_competencies
     Save the plot to the given path.
     """

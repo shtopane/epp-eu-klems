@@ -100,3 +100,28 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     )
 
     return fig
+
+def plot_share_tangible_to_intangible(df: pd.DataFrame):
+    df["country_name"] = add_country_name(df)
+
+    df_melt = df.melt(id_vars='country_name', value_vars=['intangible_assets', 'tangible_assets' ], var_name='variable', value_name='value')
+    fig = px.bar(df_melt, x='country_name', y='value', color='variable', barmode='group', title='Bar Chart', color_discrete_sequence=['lavender', 'lightgray'])
+
+    fig.update_layout(
+                title=f"Intangible to tangible investment (percent of GDP), 2006",
+                plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+                legend=dict(
+                    title=None,
+                    orientation="h",  # Horizontal orientation
+                    yanchor="top",
+                    y=-0.2,  # Adjust this value to move the legend up or down
+                    xanchor="center",
+                    x=0.5,  # Center the legend
+                ),
+                yaxis=dict(
+                    gridcolor="gray",  # Only horizontal grid lines
+                ),
+                xaxis_title=None, 
+                yaxis_title=None
+        )
+    return fig

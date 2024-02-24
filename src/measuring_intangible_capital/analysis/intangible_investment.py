@@ -26,8 +26,11 @@ def _calculate_share_of_intangible_investment(
     return round((intangible_investment / gdp) * 100, 3)
 
 def _aggregate_intangible_investment(df: pd.DataFrame, year: int, mode: INTANGIBLE_AGGREGATE_CATEGORIES_TYPE) -> pd.DataFrame:
-    """Aggregate the intangible investment data set.
-
+    """Aggregate the total market intangible investment data set for a given year.
+    Categories are: computerized_information, innovative_property, economic_competencies
+    Sum up sub-categories which belong to the aggregate category.
+    Ex: computerized_information - software_and_databases, research_and_development
+    
     Args:
         df (pd.DataFrame): The intangible investment data set.
 
@@ -107,12 +110,24 @@ def get_share_of_intangible_investment_per_gdp(
     data_merged.reset_index(inplace=True)
     return data_merged
 
-def get_intangible_investment_aggregate_types(capital_accounts: pd.DataFrame, gdp: pd.Series) -> pd.DataFrame:
+def get_intangible_investment_aggregate_types(capital_accounts: pd.DataFrame, gdp: pd.Series, year: int) -> pd.DataFrame:
+    """Calculate the share of intangible investment for each aggregate category for a given year.
+    For each category, calculate the share of intangible investment of GDP.
+    Categories are: computerized_information, innovative_property, economic_competencies
+
+    Args:
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
+        gdp (pd.Series): The GDP of a given country.
+        year (int): The year for which to calculate the share of intangible investment.
+    
+    Returns:
+        pd.DataFrame: The share of intangible investment for each aggregate category.
+    """
     df = pd.DataFrame()
      
     for column in INTANGIBLE_AGGREGATE_CATEGORIES:
         df[column] = _calculate_share_of_intangible_investment(
-            _aggregate_intangible_investment(capital_accounts, 2006, column),
+            _aggregate_intangible_investment(capital_accounts, year, column),
             gdp
         )
     return df

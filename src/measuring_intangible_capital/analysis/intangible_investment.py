@@ -1,13 +1,18 @@
 """Functions to calculate intangible investment."""
 
+from typing import Literal
 import pandas as pd
+import plotly.express as px
 
 from measuring_intangible_capital.config import (
     CAPITAL_ACCOUNT_INDUSTRY_CODE,
+    COUNTRIES,
+    COUNTRY_CODES,
     DATA_CLEAN_PATH,
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
+    PLOT_COLORS_BY_COUNTRY,
 )
-
+from measuring_intangible_capital.final.plot import plot_share_intangible_of_gdp_by_type
 
 def _calculate_share_of_intangible_investment(
     intangible_investment: pd.Series, gdp: pd.Series
@@ -85,11 +90,92 @@ def get_share_of_intangible_investment_per_gdp(
     data_merged.reset_index(inplace=True)
     return data_merged
 
+def aggregate_computerized_information(df: pd.DataFrame, year: int) -> pd.DataFrame:
+    """Aggregate the intangible investment data set.
 
-# year_range = range(1995, 2007)
+    Args:
+        df (pd.DataFrame): The intangible investment data set.
 
-# dfs_merged = []
+    Returns:
+        pd.DataFrame: The aggregated intangible investment data set.
 
+    """
+    return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][["software_and_databases", "research_and_development"]].sum(axis=1)
+
+def aggregate_innovative_property(df: pd.DataFrame, year: int) -> pd.DataFrame:
+    """Aggregate the intangible investment data set.
+
+    Args:
+        df (pd.DataFrame): The intangible investment data set.
+
+    Returns:
+        pd.DataFrame: The aggregated intangible investment data set.
+
+    """
+    return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][["entertainment_and_artistic", "new_financial_product", "design"]].sum(axis=1)
+
+def aggregate_economic_competencies(df: pd.DataFrame, year: int) -> pd.DataFrame:
+    """Aggregate the intangible investment data set.
+
+    Args:
+        df (pd.DataFrame): The intangible investment data set.
+
+    Returns:
+        pd.DataFrame: The aggregated intangible investment data set.
+
+    """
+    return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][["organizational_capital", "brand", "training"]].sum(axis=1)
+
+def aggregate_intangible_investment(df: pd.DataFrame, year: int, mode: Literal['computerized_information', 'innovative_property', 'economic_competencies']) -> pd.DataFrame:
+    """Aggregate the intangible investment data set.
+
+    Args:
+        df (pd.DataFrame): The intangible investment data set.
+
+    Returns:
+        pd.DataFrame: The aggregated intangible investment data set.
+
+    """
+    columns = None
+
+    if mode == "computerized_information":
+        columns = ["software_and_databases", "research_and_development"]
+    elif mode == "innovative_property":
+        columns = ["entertainment_and_artistic", "new_financial_product", "design"]
+    elif mode == "economic_competencies":
+        columns = ["organizational_capital", "brand", "training"]
+    else:
+        raise ValueError("Invalid mode")
+    
+    return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][columns].sum(axis=1)
+
+def get_intangible_investment_aggregate_types(capital_accounts: pd.DataFrame, gdp: pd.Series) -> pd.DataFrame:
+    df = pd.DataFrame()
+     
+    for column in ["computerized_information", "innovative_property", "economic_competencies"]:
+
+        df[column] = _calculate_share_of_intangible_investment(
+            aggregate_intangible_investment(capital_accounts, 2006, column),
+            gdp
+        )
+    return df
+
+# dfs = []
+
+# for country_code in COUNTRY_CODES:
+#     capital_accounts = pd.read_pickle(DATA_CLEAN_PATH / country_code / "capital_accounts.pkl")
+#     national_accounts = pd.read_pickle(DATA_CLEAN_PATH / country_code / "national_accounts.pkl")
+    
+#     gdp =  national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, 2006, country_code]["gdp"],
+    
+#     df = get_intangible_investment_aggregate_types(capital_accounts, gdp)
+#     dfs.append(df)
+
+# data_plot = pd.concat(dfs).reset_index()
+# print(data_plot)
+
+# fig = plot_share_intangible_of_gdp_by_type(data_plot)
+# fig.show()
 # for country_code in COUNTRY_CODES:
 #     capital_accounts_for_years, national_accounts_for_years = get_country_total_gdp_investment(country_code, year_range)
 #     data_merged = get_share_of_intangible_investment_per_gdp(capital_accounts_for_years, national_accounts_for_years)

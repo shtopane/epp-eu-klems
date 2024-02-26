@@ -9,6 +9,7 @@ BLD = SRC.joinpath("..", "..", "bld").resolve()
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
 EU_KLEMS_DATA_DOWNLOAD_PATH = BLD.joinpath("original_data").resolve()
 DATA_CLEAN_PATH = BLD.joinpath("python", "data_clean").resolve()
+BLD_PYTHON = BLD.joinpath("python").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()

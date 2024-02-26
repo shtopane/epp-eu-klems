@@ -51,12 +51,13 @@ def _aggregate_intangible_investment(df: pd.DataFrame, year: int, mode: INTANGIB
     
     return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][columns].sum(axis=1)
 
-def get_country_total_gdp_investment(
+def get_country_total_gdp_intangible_investment(
     country_code: str, years: range
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Get totals from capital and national accounts for a country for specific years and industry codes.
     For national accounts - total GDP (VA_CP) is under the industry code "TOT"
-    For capital accounts - total of each investment column is under the industry code "MARKT"
+    For capital accounts - total of each intangible investment column under the industry code "MARKT"
+    Intangible investment are all columns except for "tangible_assets"
 
     Args:
         country_code (str): For which country to get the data(AT, CZ, DK, EL, SK)
@@ -75,6 +76,10 @@ def get_country_total_gdp_investment(
     capital_accounts_for_years = capital_accounts.loc[
         CAPITAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
     ]
+    
+    # Include only intangible investment columns
+    capital_accounts_for_years = capital_accounts_for_years.drop(columns="tangible_assets", axis=1)
+    
     national_accounts_for_years = national_accounts.loc[
         NATIONAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
     ]

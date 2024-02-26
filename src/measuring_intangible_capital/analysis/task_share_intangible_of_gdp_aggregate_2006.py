@@ -13,9 +13,7 @@ from measuring_intangible_capital.config import (
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
 from measuring_intangible_capital.analysis.intangible_investment import (
-    get_country_total_gdp_investment,
     get_intangible_investment_aggregate_types,
-    get_share_of_intangible_investment_per_gdp,
     get_share_of_tangible_investment_per_gdp,
 )
 

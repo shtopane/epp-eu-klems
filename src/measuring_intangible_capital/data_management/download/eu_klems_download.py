@@ -2,8 +2,20 @@
 
 import requests
 from bs4 import BeautifulSoup
+import re
 
-from measuring_intangible_capital.config import EU_KLEMS_WEBSITE
+from measuring_intangible_capital.config import EU_KLEMS_WEBSITE, FILES_TO_EXCLUDE
+
+def _links_not_excluded(href) -> bool:
+    """Search only for links that do not contain the files to exclude.
+    In our case, we don't use the growth accounts data, so we exclude it from the download.
+    Args:
+        href : the link on the page. Passed by BeautifulSoup.find_all
+
+    Returns:
+        bool : whether the given href is allowed or not.
+    """
+    return href and not re.compile('|'.join(FILES_TO_EXCLUDE)).search(href)
 
 def get_eu_klems_download_page() -> BeautifulSoup:
     """Return a BeautifulSoup object of the EU KLEMS download page.
@@ -29,7 +41,7 @@ def get_urls_file_names_by_country(
     country_urls = []
     file_names = []
 
-    for link in page.find_all("a"):
+    for link in page.find_all(href=_links_not_excluded):
         current_href: str = link.get("href")
         if current_href is not None and not current_href.startswith("#"):
             current_href = current_href
@@ -42,6 +54,7 @@ def get_urls_file_names_by_country(
                     "?dl=1"
                 )[1:]
                 file_name = file_name.replace("%20", "_")
+
                 file_names.append(file_name)
 
     return country_urls, file_names

@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pytask import Product, task
 
-from measuring_intangible_capital.config import BLD, COUNTRY_CODES, DATA_CLEAN_PATH, SRC
+from measuring_intangible_capital.config import BLD, COUNTRY_CODES, DATA_CLEAN_PATH, EU_KLEMS_DATA_DOWNLOAD_PATH, EU_KLEMS_FILE_NAMES, SRC
 from measuring_intangible_capital.utilities import read_yaml
 from measuring_intangible_capital.data_management.clean_data import (
     read_data,
@@ -14,12 +14,16 @@ from measuring_intangible_capital.data_management.clean_data import (
 
 clean_data_deps = {
     "scripts": Path("clean_data.py"),
-    "data_info": SRC / "data_management" / "data_info.yaml",
+    "data_info": SRC / "data_management" / "data_info.yaml"
 }
 
 for country in COUNTRY_CODES:
 
-    @task
+    clean_data_deps[f"data_{country}"] = [
+        EU_KLEMS_DATA_DOWNLOAD_PATH / country / f"{filename}.xlsx" for filename in EU_KLEMS_FILE_NAMES
+    ]
+    
+    @task(id=country)
     def task_clean_and_reshape_eu_klems(
         country: str = country,
         depends_on = clean_data_deps,

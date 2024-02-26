@@ -14,6 +14,17 @@ BLD_PYTHON = BLD.joinpath("python").resolve()
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
 PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
+# Data Config
+FILES_TO_EXCLUDE = ["growth_accounts.xlsx", "growth%20accounts"]
+
+# EU KLEMS File names
+EU_KLEMS_FILE_NAMES = [
+    "capital_accounts",
+    "intangible_analytical",
+    "labour_accounts",
+    "national_accounts",
+]
+
 # Shared variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
 COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]

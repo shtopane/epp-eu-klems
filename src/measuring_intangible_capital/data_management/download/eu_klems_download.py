@@ -28,9 +28,6 @@ def _clear_file_name(href: str, country_code: str) -> str:
     Returns:
         str: the cleaned file name
     """
-    # example url:
-    # https://www.dropbox.com/s/5usiqokdj2orzlv/SK_intangible%20analytical.xlsx?dl=1
-    # end result should be "intangible_analytical.xlsx"
     file_name = href.split(country_code)[1].strip(
         "?dl=1"
     )[1:]

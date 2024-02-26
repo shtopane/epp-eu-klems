@@ -10,7 +10,7 @@ from measuring_intangible_capital.config import (
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
 
-def _calculate_share_of_intangible_investment(
+def _calculate_investment_share_in_gdp(
     intangible_investment: pd.Series, gdp: pd.Series
 ) -> pd.Series:
     """Calculate intangible investment.
@@ -51,12 +51,13 @@ def _aggregate_intangible_investment(df: pd.DataFrame, year: int, mode: INTANGIB
     
     return df.loc[CAPITAL_ACCOUNT_INDUSTRY_CODE, year, :][columns].sum(axis=1)
 
-def get_country_total_gdp_investment(
+def get_country_total_gdp_intangible_investment(
     country_code: str, years: range
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Get totals from capital and national accounts for a country for specific years and industry codes.
     For national accounts - total GDP (VA_CP) is under the industry code "TOT"
-    For capital accounts - total of each investment column is under the industry code "MARKT"
+    For capital accounts - total of each intangible investment column under the industry code "MARKT"
+    Intangible investment are all columns except for "tangible_assets"
 
     Args:
         country_code (str): For which country to get the data(AT, CZ, DK, EL, SK)
@@ -75,6 +76,10 @@ def get_country_total_gdp_investment(
     capital_accounts_for_years = capital_accounts.loc[
         CAPITAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
     ]
+    
+    # Include only intangible investment columns
+    capital_accounts_for_years = capital_accounts_for_years.drop(columns="tangible_assets", axis=1)
+    
     national_accounts_for_years = national_accounts.loc[
         NATIONAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
     ]
@@ -102,7 +107,7 @@ def get_share_of_intangible_investment_per_gdp(
         df, national_accounts_for_years, on=["year", "country_code"], how="inner"
     )
 
-    data_merged["share_intangible"] = _calculate_share_of_intangible_investment(
+    data_merged["share_intangible"] = _calculate_investment_share_in_gdp(
         data_merged["investment_level"], data_merged["gdp"]
     )
 
@@ -126,8 +131,26 @@ def get_intangible_investment_aggregate_types(capital_accounts: pd.DataFrame, gd
     df = pd.DataFrame()
      
     for column in INTANGIBLE_AGGREGATE_CATEGORIES:
-        df[column] = _calculate_share_of_intangible_investment(
+        df[column] = _calculate_investment_share_in_gdp(
             _aggregate_intangible_investment(capital_accounts, year, column),
             gdp
         )
     return df
+
+def get_share_of_tangible_investment_per_gdp(
+        capital_accounts: pd.DataFrame, gdp: pd.Series, year: int,
+        industry_code: str = CAPITAL_ACCOUNT_INDUSTRY_CODE
+):
+    """Calculate the share of tangible investment of GDP for a given year.
+
+    Args:
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
+        gdp (pd.Series): The GDP of a given country.
+        year (int): The year for which to calculate the share of intangible investment.
+    
+    Returns:
+        pd.Series: The share of tangible investment as percent of GDP.
+    """
+    tangible_assets = capital_accounts.loc[industry_code, year, :]["tangible_assets"]
+    
+    return _calculate_investment_share_in_gdp(tangible_assets, gdp)

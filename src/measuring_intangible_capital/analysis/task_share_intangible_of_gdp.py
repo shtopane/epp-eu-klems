@@ -6,7 +6,7 @@ import pandas as pd
 from pytask import task
 
 from measuring_intangible_capital.config import BLD, COUNTRY_CODES
-from measuring_intangible_capital.analysis.intangible_investment import get_country_total_gdp_investment, get_share_of_intangible_investment_per_gdp
+from measuring_intangible_capital.analysis.intangible_investment import get_country_total_gdp_intangible_investment, get_share_of_intangible_investment_per_gdp
 
 share_intangible_of_gdp_deps = {
     "scripts": [Path("intangible_investment.py")]
@@ -28,7 +28,7 @@ def task_share_intangible_of_gdp(
   dfs = []
 
   for country_code in COUNTRY_CODES:
-    capital_accounts_for_years, national_accounts_for_years = get_country_total_gdp_investment(country_code, years)
+    capital_accounts_for_years, national_accounts_for_years = get_country_total_gdp_intangible_investment(country_code, years)
     df = get_share_of_intangible_investment_per_gdp(capital_accounts_for_years, national_accounts_for_years)
     dfs.append(df)
   

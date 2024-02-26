@@ -2,12 +2,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from measuring_intangible_capital.config import BLD
+from measuring_intangible_capital.config import BLD, SRC
 from measuring_intangible_capital.final.plot import plot_share_intangibles_all_countries
 
 
 plot_share_intangible_of_gdp_deps = {
-    "scripts": [Path("plot.py")],
+    "scripts": [Path("plot.py"), Path(SRC / "analysis" / "intangible_investment.py")],
     "data": BLD / "python" / "share_intangible" / "shares_intangible_of_gdp.pkl",
 }
 

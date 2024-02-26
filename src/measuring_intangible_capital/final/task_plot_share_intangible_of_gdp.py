@@ -1,17 +1,21 @@
 from pathlib import Path
+from typing import Annotated
 
 import pandas as pd
+from pytask import Product
 
-from measuring_intangible_capital.config import BLD, SRC
+from measuring_intangible_capital.config import BLD, BLD_PYTHON, SRC
 from measuring_intangible_capital.final.plot import plot_share_intangibles_all_countries
 
 
 plot_share_intangible_of_gdp_deps = {
     "scripts": [Path("plot.py"), Path(SRC / "analysis" / "intangible_investment.py")],
-    "data": BLD / "python" / "share_intangible" / "shares_intangible_of_gdp.pkl",
+    "data": BLD_PYTHON / "share_intangible" / "gdp_aggregate_1995_2006.pkl",
 }
 
-def task_plot_share_intangible_of_gdp(depends_on = plot_share_intangible_of_gdp_deps, plot_save_path = BLD / "figures" / "shares_intangible_investment_gdp.png"):
+def task_plot_share_intangible_of_gdp(
+        depends_on: dict = plot_share_intangible_of_gdp_deps, 
+        plot_save_path: Annotated[Path, Product] = BLD / "figures" / "figure_1b.png"):
     """Figure 1: Plot share of intangible investment as percent of GDP for all years and countries.
     Save the plot as png file in the figures folder.
     """

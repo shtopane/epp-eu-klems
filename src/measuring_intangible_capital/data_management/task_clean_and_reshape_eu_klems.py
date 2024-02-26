@@ -5,7 +5,7 @@ from typing import Annotated
 
 from pytask import Product, task
 
-from measuring_intangible_capital.config import BLD, COUNTRY_CODES, SRC
+from measuring_intangible_capital.config import BLD, COUNTRY_CODES, DATA_CLEAN_PATH, SRC
 from measuring_intangible_capital.utilities import read_yaml
 from measuring_intangible_capital.data_management.clean_data import (
     read_data,
@@ -17,23 +17,14 @@ clean_data_deps = {
     "data_info": SRC / "data_management" / "data_info.yaml",
 }
 
-
 for country in COUNTRY_CODES:
 
     @task
     def task_clean_and_reshape_eu_klems(
-        depends_on=clean_data_deps,
         country: str = country,
-        path_to_capital_accounts: Annotated[Path, Product] = BLD
-        / "python"
-        / "data_clean"
-        / country
-        / "capital_accounts.pkl",
-        path_to_national_accounts: Annotated[Path, Product] = BLD
-        / "python"
-        / "data_clean"
-        / country
-        / "national_accounts.pkl",
+        depends_on = clean_data_deps,
+        path_to_capital_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "capital_accounts.pkl",
+        path_to_national_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "national_accounts.pkl",
     ):
         """Clean the data (Python version)."""
         data_info = read_yaml(depends_on["data_info"])

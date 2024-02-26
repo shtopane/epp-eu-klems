@@ -5,8 +5,15 @@ from typing import Annotated
 
 from pytask import Product, task
 
-from measuring_intangible_capital.config import BLD, COUNTRY_CODES, DATA_CLEAN_PATH, EU_KLEMS_DATA_DOWNLOAD_PATH, EU_KLEMS_FILE_NAMES, SRC
-from measuring_intangible_capital.utilities import read_yaml
+from measuring_intangible_capital.config import (
+    COUNTRY_CODES,
+    DATA_CLEAN_PATH,
+    SRC,
+)
+from measuring_intangible_capital.utilities import (
+    get_eu_klems_download_paths,
+    read_yaml,
+)
 from measuring_intangible_capital.data_management.clean_data import (
     read_data,
     clean_and_reshape_eu_klems,
@@ -14,19 +21,16 @@ from measuring_intangible_capital.data_management.clean_data import (
 
 clean_data_deps = {
     "scripts": Path("clean_data.py"),
-    "data_info": SRC / "data_management" / "data_info.yaml"
+    "data_info": SRC / "data_management" / "data_info.yaml",
 }
 
 for country in COUNTRY_CODES:
+    clean_data_deps[f"data_{country}"] = get_eu_klems_download_paths(country)
 
-    clean_data_deps[f"data_{country}"] = [
-        EU_KLEMS_DATA_DOWNLOAD_PATH / country / f"{filename}.xlsx" for filename in EU_KLEMS_FILE_NAMES
-    ]
-    
     @task(id=country)
     def task_clean_and_reshape_eu_klems(
         country: str = country,
-        depends_on = clean_data_deps,
+        depends_on=clean_data_deps,
         path_to_capital_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "capital_accounts.pkl",
         path_to_national_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "national_accounts.pkl",
     ):

@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Annotated
 import pandas as pd
 
-from pytask import Product, task
+from pytask import Product
 
 from measuring_intangible_capital.config import (
     BLD_PYTHON,
@@ -46,15 +46,18 @@ def task_share_intangible_of_gdp_aggregate_2006(
     for index, country_code in enumerate(COUNTRY_CODES):
         capital_accounts = pd.read_pickle(depends_on["capital_accounts"][index])
         national_accounts = pd.read_pickle(depends_on["national_accounts"][index])
-
-        gdp = (
+        
+        gdp_for_year = (
             national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, year, country_code][
                 "gdp"
             ],
         )
 
+        # For Greece, the investment is under TOT industry code. There's no data on the industry level.
+        intangible_industry_code = NATIONAL_ACCOUNT_INDUSTRY_CODE if country_code == "EL" else CAPITAL_ACCOUNT_INDUSTRY_CODE
+        
         df_intangible_investment = get_intangible_investment_aggregate_types(
-            capital_accounts, gdp, year
+            capital_accounts, gdp_for_year, year, intangible_industry_code
         )
         dfs_intangible_investment.append(df_intangible_investment)
 
@@ -66,7 +69,7 @@ def task_share_intangible_of_gdp_aggregate_2006(
         )
 
         df_tangible_investment = get_share_of_tangible_investment_per_gdp(
-            capital_accounts, gdp, year, tangible_industry_code
+            capital_accounts, gdp_for_year, year, tangible_industry_code
         )
         dfs_tangible_investment.append(df_tangible_investment)
 

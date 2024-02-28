@@ -42,9 +42,15 @@ def add_country_name(df: pd.DataFrame) -> pd.Series:
         pd.Series: The data frame with country name added.
 
     """
+    if not isinstance(df, pd.DataFrame):
+        raise ValueError("The input is not a pandas DataFrame.")
+    
     if "country_code" not in df.columns:
         raise ValueError("The data frame does not contain a column 'country_code'.")
 
+    if df["country_code"].empty:
+        return df
+    
     return df["country_code"].map(dict(zip(COUNTRY_CODES, COUNTRIES)))
 
 

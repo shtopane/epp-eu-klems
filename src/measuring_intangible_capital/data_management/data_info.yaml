@@ -10,7 +10,7 @@ sheets_to_read:
     'I_OrgCap', 
     'I_Brand', 
     'I_Train',
-    'I_Tang'
+    'I_TangNRes'
     ]
   intangible_analytical_aggregate: [
     'I_Soft_DB',
@@ -40,7 +40,7 @@ variable_name_mapping:
   I_Train: training
 
   # Tangible assets
-  I_Tang: tangible_assets
+  I_TangNRes: tangible_assets
 
   # National accounts
   VA_CP: gdp

@@ -2,15 +2,16 @@
 data_names: [intangible_analytical, national_accounts] # which files to read from each country folder
 sheets_to_read:
   intangible_analytical_detailed: [
-    'I_Soft_DB',
-    'I_RD', 
-    'I_OIPP', 
-    'I_NFP', 
-    'I_Design', 
-    'I_OrgCap', 
-    'I_Brand', 
-    'I_Train',
-    'I_Tang'
+    # Investments
+    'I_Soft_DB', # Computer software and databases
+    'I_RD',  # Research and development
+    'I_OIPP', # Entertainment, literary and artistic originals
+    'I_NFP',  # New product development costs in the financial industry
+    'I_Design', # Design
+    'I_OrgCap', # Organizational capital
+    'I_Brand', # Brand
+    'I_Train', # Training
+    'I_TangNRes' # Total tangible assets, excluding non residential buildings
     ]
   intangible_analytical_aggregate: [
     'I_Soft_DB',
@@ -40,7 +41,7 @@ variable_name_mapping:
   I_Train: training
 
   # Tangible assets
-  I_Tang: tangible_assets
+  I_TangNRes: tangible_assets
 
   # National accounts
   VA_CP: gdp

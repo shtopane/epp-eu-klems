@@ -12,28 +12,12 @@ def _calculate_labour_compensation(national_accounts: pd.DataFrame) -> pd.Series
         - national_accounts["hours_worked_employees"]
     )
 
-def _calculate_capital_compensation(national_accounts: pd.DataFrame, labour_compensation: pd.Series) -> pd.Series:
+def _calculate_capital_compensation(national_accounts: pd.DataFrame, growth_accounts: pd.DataFrame) -> pd.Series:
     # CAP(capital compensation) = gdp - labour_compensation
-    return national_accounts["gdp"] - labour_compensation
+    df = growth_accounts.copy()
 
-def main(national_accounts: pd.DataFrame):
-    # Start with empty DataFrame
-    df = pd.DataFrame()
-
-    # FIRST
-    # LAB_j = COMP_j + (COMP_j / HEMPE_j) * (HEMP_j - HEMPE_j)
-    df["labour_compensation"] = national_accounts["compensation_of_employees"] + (
-        national_accounts["compensation_of_employees"]
-        / national_accounts["hours_worked_persons"]
-    ) * (
-        national_accounts["hours_worked_persons"]
-        - national_accounts["hours_worked_employees"]
-    )
-
-    # SECOND
-    # CAP(capital compensation) = gdp - labour_compensation
-    df["capital_compensation"] = national_accounts["gdp"] - df["labour_compensation"]
-
+    df["capital_compensation"] = national_accounts["gdp"] - growth_accounts["labour_compensation"]
+    
     # page 18, EU KLEMS manual Deliverable D2.3.1 February 2023
     # Replace negative capital accumulation with 95% of the GDP and labour compensation for the same
     # records with 5% of GDP
@@ -44,6 +28,18 @@ def main(national_accounts: pd.DataFrame):
     df.loc[negative_capital_accumulation, "labour_compensation"] = (
         0.05 * national_accounts["gdp"]
     )
+
+    return df
+
+def main(national_accounts: pd.DataFrame):
+    # Start with empty DataFrame
+    df = pd.DataFrame()
+
+    # FIRST
+    df["labour_compensation"] = _calculate_labour_compensation(national_accounts)
+
+    # SECOND
+    df = _calculate_capital_compensation(national_accounts, df)
 
     return df
 

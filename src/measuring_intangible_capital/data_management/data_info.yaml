@@ -16,7 +16,12 @@ sheets_to_read:
     'I_Soft_DB',
     'I_Innovprop', 
     'I_EconComp']
-  national_accounts: ['VA_CP']
+  national_accounts: [
+    'VA_CP',
+    'H_EMP',
+    'H_EMPE',
+    'COMP'
+]
 categorical_columns: ['var', 'nace_r2_code', 'geo_code']
 columns_to_drop:
  - geo_name
@@ -44,6 +49,9 @@ variable_name_mapping:
 
   # National accounts
   VA_CP: gdp
+  H_EMP: hours_worked_persons
+  H_EMPE: hours_worked_employees
+  COMP: compensation_of_employees
 column_rename_mapping:
   var: variable_name
   nace_r2_code: industry_code

@@ -5,12 +5,14 @@ from typing import Literal
 
 # DATA Related constants
 FILES_TO_EXCLUDE = ["growth_accounts.xlsx", "growth%20accounts"]
+FILES_TO_DOWNLOAD_NAMES = ['National Accounts', 'Capital', 'Labour', 'Intangibles', 'Growth Accounts Basic']
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
 EU_KLEMS_FILE_NAMES = [
     "capital_accounts",
     "intangible_analytical",
     "labour_accounts",
     "national_accounts",
+    "growth_accounts",
 ]
 
 # Paths

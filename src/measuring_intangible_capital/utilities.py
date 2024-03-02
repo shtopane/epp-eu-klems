@@ -73,7 +73,12 @@ def get_eu_klems_download_paths(country_code: str) -> dict:
             f"The country code {country_code} is not valid. Please use one of {COUNTRY_CODES}."
         )
     
+    file_names = EU_KLEMS_FILE_NAMES
+
+    if country_code == "SK":
+        file_names = [file_name for file_name in file_names if file_name != "growth_accounts"]
+
     return {
         filename: EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / f"{filename}.xlsx"
-        for filename in EU_KLEMS_FILE_NAMES
+        for filename in file_names
     }

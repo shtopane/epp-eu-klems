@@ -11,17 +11,30 @@ sheets_to_read:
     'I_Brand', 
     'I_Train',
     'I_Tang'
-    ]
+  ]
   intangible_analytical_aggregate: [
     'I_Soft_DB',
     'I_Innovprop', 
-    'I_EconComp']
+    'I_EconComp'
+  ]
   national_accounts: [
     'VA_CP',
     'H_EMP',
     'H_EMPE',
     'COMP'
-]
+  ]
+  growth_accounts: [
+    'LAB',
+    'CAP',
+    'VA_G',
+    'VAConH',
+    'VAConLC',
+    'VAConTangNICT',
+    'VAConTangICT',
+    'VAConIntang',
+    'VAConTFP'
+  ]
+
 categorical_columns: ['var', 'nace_r2_code', 'geo_code']
 columns_to_drop:
  - geo_name
@@ -52,6 +65,17 @@ variable_name_mapping:
   H_EMP: hours_worked_persons
   H_EMPE: hours_worked_employees
   COMP: compensation_of_employees
+
+  # Growth accounts: Contributions to value added growth
+  LAB: labour_compensation # just labour compensation(in millions)
+  CAP: capital_compensation # just capital compensation(in millions)
+  VA_G: growth_value_added
+  VAConH: hours_worked
+  VAConLC: labour_composition
+  VAConTangNICT: tangible_nonICT
+  VAConTangICT: tangible_ICT
+  VAConIntang: intangible
+  VAConTFP: total_factor_productivity
 column_rename_mapping:
   var: variable_name
   nace_r2_code: industry_code

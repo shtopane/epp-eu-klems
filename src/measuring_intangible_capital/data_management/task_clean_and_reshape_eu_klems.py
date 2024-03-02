@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import Annotated
+import pandas as pd
 
 from pytask import Product, task
 
@@ -17,6 +18,7 @@ from measuring_intangible_capital.utilities import (
 from measuring_intangible_capital.data_management.clean_data import (
     read_data,
     clean_and_reshape_eu_klems,
+    read_growth_accounts,
 )
 
 clean_data_deps = {
@@ -33,6 +35,7 @@ for country in COUNTRY_CODES:
         depends_on=clean_data_deps,
         path_to_capital_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "capital_accounts.pkl",
         path_to_national_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "national_accounts.pkl",
+        path_to_growth_accounts: Annotated[Path, Product] = DATA_CLEAN_PATH / country / "growth_accounts.pkl",
     ):
         """Clean the data (Python version)."""
         data_info = read_yaml(depends_on["data_info"])
@@ -45,3 +48,11 @@ for country in COUNTRY_CODES:
 
         capital_accounts_clean.to_pickle(path_to_capital_accounts)
         national_accounts_clean.to_pickle(path_to_national_accounts)
+
+        if country != "SK":
+            growth_accounts = read_growth_accounts(data_info, country)
+            growth_accounts_clean = clean_and_reshape_eu_klems(growth_accounts, data_info)
+            growth_accounts_clean.to_pickle(path_to_growth_accounts)
+        else:
+            growth_accounts_clean = pd.DataFrame()
+            growth_accounts_clean.to_pickle(path_to_growth_accounts)

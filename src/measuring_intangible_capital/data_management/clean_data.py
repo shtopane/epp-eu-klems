@@ -20,8 +20,6 @@ def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.Data
     national_accounts_dfs = []
     capital_accounts_dfs = []
 
-    # intangible_analytical_detailed
-    # intangible_analytical_aggregate
     for sheet in data_info["sheets_to_read"]["intangible_analytical_detailed"]:
         path_to_file = (
             BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "intangible_analytical.xlsx"
@@ -35,8 +33,30 @@ def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.Data
         )
         data_sheet = pd.read_excel(path_to_file, sheet_name=sheet)
         national_accounts_dfs.append(data_sheet)
-
+    
     return capital_accounts_dfs, national_accounts_dfs
+
+def read_growth_accounts(data_info: dict, country_code: str) -> list[pd.DataFrame]:
+    """Read growth accounts data from the EU KLEMS data set.
+    The data is read for a specific country and the sheets specified in the data_info object.
+
+    Args:
+        data_info (dict): yaml file with information on the data set.
+        country_code (str): AT, CZ, DK, EL
+
+    Returns:
+        tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames
+    """
+    growth_accounts_dfs = []
+
+    for sheet in data_info["sheets_to_read"]["growth_accounts"]:
+        path_to_file = (
+            BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "growth_accounts.xlsx"
+        )
+        data_sheet = pd.read_excel(path_to_file, sheet_name=sheet)
+        growth_accounts_dfs.append(data_sheet)
+
+    return growth_accounts_dfs
 
 def clean_and_reshape_eu_klems(
     raw: list[pd.DataFrame], data_info: dict

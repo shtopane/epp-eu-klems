@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-from measuring_intangible_capital.config import EU_KLEMS_WEBSITE, FILES_TO_EXCLUDE
+from measuring_intangible_capital.config import EU_KLEMS_WEBSITE, FILES_TO_DOWNLOAD_NAMES, FILES_TO_EXCLUDE
 
 def _links_not_excluded(href) -> bool:
     """Filter the links that are not allowed.
@@ -16,6 +16,9 @@ def _links_not_excluded(href) -> bool:
         bool : whether the given href is allowed or not.
     """
     return href and not re.compile('|'.join(FILES_TO_EXCLUDE)).search(href)
+
+def _links_names():
+    return re.compile('|'.join(FILES_TO_DOWNLOAD_NAMES))
 
 def _clear_file_name(href: str, country_code: str) -> str:
     """Extract the file name from the URL and clean it.
@@ -61,7 +64,9 @@ def get_urls_file_names_by_country(
     country_urls = []
     file_names = []
 
-    for link in page.find_all(href=_links_not_excluded):
+    links_to_download = page.find_all("a", string=_links_names())
+    
+    for link in links_to_download:
         current_href: str = link.get("href")
         if current_href is not None and not current_href.startswith("#"):
             if country_code in current_href:

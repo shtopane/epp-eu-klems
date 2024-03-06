@@ -1,6 +1,7 @@
 """Functions plotting results."""
 
 import plotly.express as px
+import plotly.graph_objects as go
 
 import pandas as pd
 import math
@@ -125,3 +126,80 @@ def plot_share_tangible_to_intangible(df: pd.DataFrame):
                 yaxis_title=None
         )
     return fig
+
+def plot_composition_of_labour_productivity(df: pd.DataFrame):
+    df = df.reset_index()
+    df["country_name"] = add_country_name(df)
+
+
+    columns = [col for col in df.columns if col not in ['country_code', 'country_name', 'labour_productivity']]
+    color_map = {
+        'intangible': 'royalblue',
+        'labour_composition': 'gray',
+        'tangible_ICT': 'lightsteelblue',
+        'tangible_nonICT': 'darkgray',
+        'mfp': 'lavender'
+    }
+
+    fig = go.Figure(data=[
+        go.Bar(name=column, x=df['country_name'], y=df[column], marker_color=color_map[column]) for column in columns
+    ])
+    fig.update_layout(
+            title="Contribution of inputs to labour productivity growth, annual average (percent), 1995-2006",
+            barmode='stack', 
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            legend=dict(
+                title=None,
+                orientation="h",  # Horizontal orientation
+                yanchor="top",
+                y=-0.2,  # Adjust this value to move the legend up or down
+                xanchor="center",
+                x=0.5,  # Center the legend
+            ),
+            yaxis=dict(
+                dtick=1,
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+            xaxis_title=None, 
+            yaxis_title=None
+    )
+    return fig
+
+def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
+    # TODO: Not liking this... refactor or think how to make it better
+    data_for_plotting = df.copy()
+
+    # Check if the DataFrame has a default index
+    if data_for_plotting.index.equals(pd.RangeIndex(start=0, stop=len(df))):
+        print("DataFrame has a default index.")
+    else:
+        print("DataFrame has a custom index. Resetting index.")
+        data_for_plotting.reset_index(inplace=True)
+    
+    data_for_plotting["country_name"] = add_country_name(data_for_plotting)
+    
+    df_melted = data_for_plotting.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='component', value_name='value')
+
+    fig = px.bar(df_melted, x='country_name', y='value', color='component', barmode='stack', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
+
+    fig.update_layout(
+            title=f"Contribution of sub-components of intangibles to labour productivity growth, annual average (percent), 1995-2006",
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            legend=dict(
+                title=None,
+                orientation="h",  # Horizontal orientation
+                yanchor="top",
+                y=-0.2,  # Adjust this value to move the legend up or down
+                xanchor="center",
+                x=0.5,  # Center the legend
+            ),
+            yaxis=dict(
+                dtick=0.05, 
+                range=[0, 0.5],
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+            xaxis_title=None, 
+            yaxis_title=None
+    )
+    return fig
+

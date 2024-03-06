@@ -23,4 +23,5 @@ def task_clean_gdp_per_capita(
     data_info = read_yaml(depends_on["data_info"])
     raw = read_data(depends_on["data"], data_info)
     data_clean = clean_gdp_per_capita(raw, data_info)
+
     data_clean.to_pickle(path_to_gdp_per_capita)

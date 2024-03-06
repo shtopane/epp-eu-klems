@@ -42,11 +42,22 @@ def _rename_country_codes(sr: pd.Series) -> pd.Series:
     # TODO: Check if this is the right column(entries should be the same length)
     return sr.map(COUNTRY_CODES_MAP)
 
+def _make_years_separate_column(df: pd.DataFrame) -> pd.DataFrame:
+    """Make the years a separate column by melting the data set.
+    Args:
+      df (pd.DataFrame): The data frame.
+    Returns:
+      pd.DataFrame: The data frame with the years as a separate column.
+    """
+    df_melted =  df.melt(id_vars=["country_code"], var_name="year", value_name="gdp_per_capita")
+    df_melted["year"] = df_melted["year"].astype(int)
+    return df_melted
 
 def clean_gdp_per_capita(raw: pd.DataFrame, data_info: dict):
     df = clean_data(raw, data_info)
     df = _rename_year_columns(df)
     df["country_code"] = _rename_country_codes(df["country_code"])
-    df = df.set_index("country_code")
+    df = _make_years_separate_column(df)
+    df = df.set_index(["country_code", "year"])
 
     return df

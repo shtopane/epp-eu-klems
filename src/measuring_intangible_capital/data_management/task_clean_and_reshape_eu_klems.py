@@ -23,7 +23,7 @@ from measuring_intangible_capital.data_management.clean_data import (
 
 clean_data_deps = {
     "scripts": Path("clean_data.py"),
-    "data_info": SRC / "data_management" / "data_info.yaml",
+    "data_info": SRC / "data_management" / "eu_klems_data_info.yaml",
 }
 
 for country in COUNTRY_CODES:

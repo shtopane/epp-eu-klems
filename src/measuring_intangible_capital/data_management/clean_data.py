@@ -65,7 +65,7 @@ def clean_and_reshape_eu_klems(
 
     Args:
         raw (pd.DataFrame): The raw data set.
-        data_info (dict): Information on data set stored in data_info.yaml.
+        data_info (dict): Information on data set stored in eu_klems_data_info.yaml.
 
     Returns:
         pd.DataFrame: The cleaned and reshaped data set.
@@ -95,7 +95,7 @@ def clean_and_reshape_eu_klems(
 def _clean_data(data: pd.DataFrame, data_info: dict) -> pd.DataFrame:
     """Basic cleaning of the data set.
     
-    Information on data columns is stored in ``data_management/data_info.yaml``.
+    Information on data columns is stored in ``data_management/eu_klems_data_info.yaml``.
     Based on the ``data_info`` object:
     - Drop columns
     - Set categorical columns
@@ -103,7 +103,7 @@ def _clean_data(data: pd.DataFrame, data_info: dict) -> pd.DataFrame:
     - Set index
     Args:
         data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in data_info.yaml.
+        data_info (dict): Information on data set stored in eu_klems_data_info.yaml.
     Returns:
         pandas.DataFrame: The cleaned data set.
 
@@ -172,7 +172,7 @@ def _rename_variable_category(sr: pd.Series, category_names: dict) -> pd.Series:
     For national accounts we read VA_CP which is value we use as GDP here.
     This function renames this crude names to more descriptive ones.
 
-    The rename dict can be seen in data_info.yaml file.
+    The rename dict can be seen in eu_klems_data_info.yaml file.
     ### Aggregate components
     I_Innovprop: intellectual_property
     I_EconComp: economic_competencies

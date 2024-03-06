@@ -1,4 +1,4 @@
-"""Function(s) for cleaning the data set(s)."""
+"""Function(s) for cleaning the EU KLEMS data set(s)."""
 
 import pandas as pd
 

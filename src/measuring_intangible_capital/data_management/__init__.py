@@ -1,6 +1,6 @@
 """Functions for managing data."""
 
-from measuring_intangible_capital.data_management.clean_data import (
+from measuring_intangible_capital.data_management.clean_eu_klems_data import (
     clean_and_reshape_eu_klems,
     read_data,
 )

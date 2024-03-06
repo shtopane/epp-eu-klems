@@ -82,3 +82,43 @@ def get_eu_klems_download_paths(country_code: str) -> dict:
         filename: EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / f"{filename}.xlsx"
         for filename in file_names
     }
+
+
+def get_percent_of_intangible_sub_components_in_labour_productivity():
+    """These are real values from the paper.
+    Use the percentages to calculate the share of intangible sub-components in labour productivity
+    from total intangible capital deepening.
+    Round to 3 decimal points.
+    Returns:
+        dict[list]: the share of each sub-category of intangible capital(software, R&D, etc) in labour productivity.
+        Example:
+        {
+            "AT": [0.13, 0.29, 0.13], soft_db, innovative_property, economic_competencies
+            "DK": [0.29, 0.27, 0.17],
+            "CZ": [0.06, 0.35, 0.27],
+            "SK": [0.04, 0.07, 0.10],
+            "EL": [0.06, 0.11, 0.07],
+        }
+    """
+    # "SK": 0.21,
+    intangible_capital_deepening = {
+        "AT": 0.55,
+        "DK": 0.72,
+        "CZ": 0.68,
+        "EL": 0.24,
+    }
+
+    #  "SK": [0.04, 0.07, 0.10],
+    intangible_capital_deepening_by_sub_component = {
+        "AT": [0.13, 0.29, 0.13],
+        "DK": [0.29, 0.27, 0.17],
+        "CZ": [0.06, 0.35, 0.27],
+        "EL": [0.06, 0.11, 0.07],
+    }
+
+    intangible_capital_deepening_by_sub_component_percentage = {
+         country: [round(value / intangible_capital_deepening[country], 3) for value in values]
+          for country, values in intangible_capital_deepening_by_sub_component.items()
+    }
+    
+    return intangible_capital_deepening_by_sub_component_percentage

@@ -10,10 +10,10 @@ from measuring_intangible_capital.final.plot import plot_composition_of_labour_p
 
 plot_share_intangible_of_gdp_deps = {
     "scripts": [Path("plot.py"), Path(SRC / "analysis" / "intangible_investment.py")],
-    "data": BLD_PYTHON / "labor_productivity" / "composition.pkl",
+    "data": BLD_PYTHON / "labour_productivity" / "composition.pkl",
 }
 
-def task_plot_labor_composition_average_1995_2006(
+def task_plot_labour_composition_average_1995_2006(
         depends_on: dict = plot_share_intangible_of_gdp_deps, 
         plot_save_path: Annotated[Path, Product] = BLD / "figures" / "figure_4a.png"):
     """Figure 4a: Plot share of intangible investment as percent of GDP for all years and countries.

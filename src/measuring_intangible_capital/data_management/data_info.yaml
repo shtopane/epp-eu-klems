@@ -69,7 +69,7 @@ variable_name_mapping:
   # Growth accounts: Contributions to value added growth
   LAB: labour_compensation # just labour compensation(in millions)
   CAP: capital_compensation # just capital compensation(in millions)
-  LP1_G: growth_value_added
+  LP1_G: labour_productivity # Growth rate of value added per hour worked, delta log
   VAConH: hours_worked
   LP1ConLC: labour_composition
   LP1ConTangNICT: tangible_nonICT

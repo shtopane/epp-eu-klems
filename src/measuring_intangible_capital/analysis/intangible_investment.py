@@ -160,8 +160,8 @@ def get_composition_of_value_added(
     for column in columns:
         df[column] = growth_account_industry[column].mean()
     
-    df["growth_value_added"] = growth_account_industry["growth_value_added"].mean()
-    df["mfp"] = df["growth_value_added"] - df[columns].mean().sum()
+    df["labour_productivity"] = growth_account_industry["labour_productivity"].mean()
+    df["mfp"] = df["labour_productivity"] - df[columns].mean().sum()
     
     return df
 

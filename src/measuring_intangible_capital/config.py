@@ -27,6 +27,7 @@ PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 # Analysis variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
+COUNTRY_CODES_LESS_SK = ["AT", "CZ", "DK", "EL"]
 COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
 COUNTRY_COLOR_MAP = dict(zip(COUNTRY_CODES, PLOT_COLORS_BY_COUNTRY))

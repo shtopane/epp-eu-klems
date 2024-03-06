@@ -130,6 +130,40 @@ def get_share_of_intangible_investment_per_gdp(
     data_merged.reset_index(inplace=True)
     return data_merged
 
+def get_composition_of_value_added(
+        growth_accounts: pd.DataFrame,
+        country_code: str,
+        industry_code: str = CAPITAL_ACCOUNT_INDUSTRY_CODE,
+):
+    """Calculate the composition of value added for a given country and industry code.
+    
+    Args:
+        growth_accounts (pd.DataFrame): The growth accounts data set for a given country.
+        country_code (str): The country code for which to calculate the composition of value added.
+        industry_code (str): The industry code for which to calculate the composition of value added. Default "MARKT".
+    
+    Returns:
+        pd.DataFrame: The composition of value added.
+    """
+    df = pd.DataFrame()
+
+    columns = [
+        "intangible",
+        "labour_composition",
+        "tangible_ICT",
+        "tangible_nonICT"
+    ]
+
+    growth_account_industry = growth_accounts.loc[industry_code, :, :]
+    df["country_code"] = [country_code]
+    
+    for column in columns:
+        df[column] = growth_account_industry[column].mean()
+    
+    df["growth_value_added"] = growth_account_industry["growth_value_added"].mean()
+    df["mfp"] = df["growth_value_added"] - df[columns].mean().sum()
+    
+    return df
 
 def get_intangible_investment_aggregate_types(
     capital_accounts: pd.DataFrame,

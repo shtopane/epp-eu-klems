@@ -26,13 +26,13 @@ sheets_to_read:
   growth_accounts: [
     'LAB',
     'CAP',
-    'VA_G',
+    'LP1_G',
     'VAConH',
-    'VAConLC',
-    'VAConTangNICT',
-    'VAConTangICT',
-    'VAConIntang',
-    'VAConTFP'
+    'LP1ConLC',
+    'LP1ConTangNICT',
+    'LP1ConTangICT',
+    'LP1ConIntang',
+    'LP1ConTFP'
   ]
 
 categorical_columns: ['var', 'nace_r2_code', 'geo_code']
@@ -69,13 +69,13 @@ variable_name_mapping:
   # Growth accounts: Contributions to value added growth
   LAB: labour_compensation # just labour compensation(in millions)
   CAP: capital_compensation # just capital compensation(in millions)
-  VA_G: growth_value_added
+  LP1_G: growth_value_added
   VAConH: hours_worked
-  VAConLC: labour_composition
-  VAConTangNICT: tangible_nonICT
-  VAConTangICT: tangible_ICT
-  VAConIntang: intangible
-  VAConTFP: total_factor_productivity
+  LP1ConLC: labour_composition
+  LP1ConTangNICT: tangible_nonICT
+  LP1ConTangICT: tangible_ICT
+  LP1ConIntang: intangible
+  LP1ConTFP: total_factor_productivity
 column_rename_mapping:
   var: variable_name
   nace_r2_code: industry_code

@@ -203,3 +203,26 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     )
     return fig
 
+
+def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    df_share_mean = intangible_investment_share.groupby('country_code')['share_intangible'].mean().reset_index()
+    df_gdp_mean = gdp_per_capita.groupby('country_code')['gdp_per_capita'].mean().reset_index()
+    df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
+    
+    fig = px.scatter(df, x="gdp_per_capita", y="share_intangible", color="country_code", text="country_code",
+                 labels={
+                     "gdp_per_capita": "GDP per capita (EKS PPP $)",
+                     "share_intangible": "Intangible investment (%GDP)"
+                 },
+                 )
+    fig.update_traces(marker=dict(symbol='diamond', color='blue'), textposition='top center')
+    fig.update_layout(
+            title=f"Intangible investment and GDP per capita (2001-04)",
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            showlegend=False,
+            yaxis=dict(
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+    )
+
+    return fig

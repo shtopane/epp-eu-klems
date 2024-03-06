@@ -3,6 +3,7 @@
 import pandas as pd
 
 from measuring_intangible_capital.config import BLD, COUNTRY_CODES, EU_KLEMS_DATA_DOWNLOAD_PATH, SRC
+from measuring_intangible_capital.data_management.data_utilities import clean_data
 from measuring_intangible_capital.utilities import read_yaml
 
 
@@ -74,7 +75,9 @@ def clean_and_reshape_eu_klems(
     data = []
 
     for df in raw:
-        data.append(_clean_data(df, data_info))
+        data_clean = clean_data(df, data_info)
+        data_clean = data_clean.set_index(["industry_code"])
+        data.append(data_clean)
     
     data = _concat_eu_klems_data(data)
 
@@ -91,34 +94,6 @@ def clean_and_reshape_eu_klems(
     data_pivot = data_pivot.round(3)
    
     return data_pivot
-
-def _clean_data(data: pd.DataFrame, data_info: dict) -> pd.DataFrame:
-    """Basic cleaning of the data set.
-    
-    Information on data columns is stored in ``data_management/eu_klems_data_info.yaml``.
-    Based on the ``data_info`` object:
-    - Drop columns
-    - Set categorical columns
-    - Rename columns
-    - Set index
-    Args:
-        data (pandas.DataFrame): The data set.
-        data_info (dict): Information on data set stored in eu_klems_data_info.yaml.
-    Returns:
-        pandas.DataFrame: The cleaned data set.
-
-    """
-    data = data.drop(columns=data_info["columns_to_drop"])
-
-    for cat_col in data_info["categorical_columns"]:
-        data[cat_col] = data[cat_col].astype(pd.CategoricalDtype())
-    
-    data = data.rename(columns=data_info["column_rename_mapping"])
-    
-    data = data.set_index(["industry_code"])
-
-    return data
-
 
 def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
     """Concatenate all sheets of data into one DataFrame.

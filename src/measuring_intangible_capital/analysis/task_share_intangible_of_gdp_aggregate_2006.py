@@ -29,7 +29,6 @@ share_intangible_of_gdp_aggregate_2006_deps = {
     ],
 }
 
-
 def task_share_intangible_of_gdp_aggregate_2006(
     depends_on=share_intangible_of_gdp_aggregate_2006_deps,
     path_to_shares_intangible: Annotated[Path, Product] = BLD_PYTHON / "share_intangible" / "gdp_aggregate_2006.pkl",
@@ -37,9 +36,8 @@ def task_share_intangible_of_gdp_aggregate_2006(
     """Calculate the share of intangible investment of GDP for each country and aggregate category for 2006.
     Each category is: computerized_information, innovative_property, economic_competencies
     """
-    year = 2006
+    year = [2006]
     dfs_intangible_investment = []
-    # dfs_tangible_investment = []
 
     for index, country_code in enumerate(COUNTRY_CODES):
         capital_accounts: pd.DataFrame = pd.read_pickle(depends_on["capital_accounts"][index])
@@ -50,7 +48,9 @@ def task_share_intangible_of_gdp_aggregate_2006(
         
         # TODO: Test this is a correct type (pd.DataFrame)
         national_accounts_for_year = national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, year, :]
+        national_accounts_for_year = national_accounts_for_year.reset_index(level="industry_code", drop=True)
         capital_accounts_for_year = capital_accounts.loc[capital_industry_code, year, :]
+        capital_accounts_for_year = capital_accounts_for_year.reset_index(level="industry_code", drop=True)
         
         df_intangible_investment = get_intangible_investment_aggregate_types(
            capital_accounts=capital_accounts_for_year, 
@@ -58,20 +58,9 @@ def task_share_intangible_of_gdp_aggregate_2006(
            country_code=country_code
         )
         df_intangible_investment["intangible_share"] = df_intangible_investment.sum(axis=1)
-
         dfs_intangible_investment.append(df_intangible_investment)
 
        
-        # df_tangible_investment = get_share_of_tangible_investment_per_gdp(
-        #     capital_accounts=capital_accounts_for_year, 
-        #     national_accounts=national_accounts_for_year,
-        #     country_code=country_code
-        # )
-
-        # dfs_tangible_investment.append(df_tangible_investment)
-
     data_intangible = pd.concat(dfs_intangible_investment)
-    # data_tangible = pd.concat(dfs_tangible_investment)
     
     pd.to_pickle(data_intangible, path_to_shares_intangible)
-    # pd.to_pickle(data_tangible, path_to_shares_tangible)

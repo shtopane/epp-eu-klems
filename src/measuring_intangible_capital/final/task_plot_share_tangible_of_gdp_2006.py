@@ -22,15 +22,11 @@ def task_plot_share_tangible_of_gdp_2006(
     Each category is: computerized_information, innovative_property, economic_competencies
     Save the plot to the given path.
     """
-    df_tangible = pd.read_pickle(depends_on["tangible_investment"])
-    df_tangible = df_tangible.set_index("country_code")
     df_intangible = pd.read_pickle(depends_on["intangible_investment"])
-
-    df_intangible_sum = pd.DataFrame()
-    df_intangible_sum["intangible_assets"] = df_intangible.set_index("country_code").sum(axis=1)
-
-    df = pd.concat([df_tangible, df_intangible_sum], axis=1).reset_index()
-
-    fig = plot_share_tangible_to_intangible(df)
-
+    df_tangible = pd.read_pickle(depends_on["tangible_investment"])
+    
+    fig = plot_share_tangible_to_intangible(
+        intangible_df=df_intangible,
+        tangible_df=df_tangible
+    )
     fig.write_image(plot_save_path)

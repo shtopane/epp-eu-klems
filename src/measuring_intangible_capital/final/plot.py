@@ -79,6 +79,7 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
+    df = df.reset_index()
     df["country_name"] = add_country_name(df)
     df_melt = df.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
@@ -104,10 +105,12 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
 
     return fig
 
-def plot_share_tangible_to_intangible(df: pd.DataFrame):
+def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: pd.DataFrame):
+    df = pd.concat([intangible_df, tangible_df], axis=1)
+    df = df.reset_index()
     df["country_name"] = add_country_name(df)
 
-    df_melt = df.melt(id_vars='country_name', value_vars=['intangible_assets', 'tangible_assets' ], var_name='variable', value_name='value')
+    df_melt = df.melt(id_vars='country_name', value_vars=['intangible_share', 'tangible_share' ], var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', barmode='group', title='Bar Chart', color_discrete_sequence=['lavender', 'lightgray'])
 
     fig.update_layout(

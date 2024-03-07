@@ -34,47 +34,45 @@ share_intangible_of_gdp_aggregate_2006_deps = {
 def task_share_intangible_of_gdp_aggregate_2006(
     depends_on=share_intangible_of_gdp_aggregate_2006_deps,
     path_to_shares_intangible: Annotated[Path, Product] = BLD_PYTHON / "share_intangible" / "gdp_aggregate_2006.pkl",
-    path_to_shares_tangible: Annotated[Path, Product]= BLD_PYTHON / "share_tangible" / "gdp_aggregate_2006.pkl"
 ):
     """Calculate the share of intangible investment of GDP for each country and aggregate category for 2006.
     Each category is: computerized_information, innovative_property, economic_competencies
     """
     year = 2006
     dfs_intangible_investment = []
-    dfs_tangible_investment = []
-    
-    for index, country_code in enumerate(COUNTRY_CODES):
-        capital_accounts = pd.read_pickle(depends_on["capital_accounts"][index])
-        national_accounts = pd.read_pickle(depends_on["national_accounts"][index])
-        
-        gdp_for_year = (
-            national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, year, country_code][
-                "gdp"
-            ],
-        )
+    # dfs_tangible_investment = []
 
-        # For Greece, the investment is under TOT industry code. There's no data on the industry level.
-        intangible_industry_code = NATIONAL_ACCOUNT_INDUSTRY_CODE if country_code == "EL" else CAPITAL_ACCOUNT_INDUSTRY_CODE
+    for index, country_code in enumerate(COUNTRY_CODES):
+        capital_accounts: pd.DataFrame = pd.read_pickle(depends_on["capital_accounts"][index])
+        national_accounts: pd.DataFrame = pd.read_pickle(depends_on["national_accounts"][index])
+        
+         # For Greece, the investment is under TOT industry code. There's no data on the industry level.
+        capital_industry_code = NATIONAL_ACCOUNT_INDUSTRY_CODE if country_code == "EL" else CAPITAL_ACCOUNT_INDUSTRY_CODE
+        
+        # TODO: Test this is a correct type (pd.DataFrame)
+        national_accounts_for_year = national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, year, :]
+        capital_accounts_for_year = capital_accounts.loc[capital_industry_code, year, :]
         
         df_intangible_investment = get_intangible_investment_aggregate_types(
-            capital_accounts, gdp_for_year, year, intangible_industry_code
+           capital_accounts=capital_accounts_for_year, 
+           national_accounts=national_accounts_for_year, 
+           country_code=country_code
         )
+        df_intangible_investment["intangible_share"] = df_intangible_investment.sum(axis=1)
+
         dfs_intangible_investment.append(df_intangible_investment)
 
-        # For Greece, the investment is under TOT industry code. There's no data on the industry level.
-        tangible_industry_code = (
-            NATIONAL_ACCOUNT_INDUSTRY_CODE
-            if country_code == "EL"
-            else CAPITAL_ACCOUNT_INDUSTRY_CODE
-        )
+       
+        # df_tangible_investment = get_share_of_tangible_investment_per_gdp(
+        #     capital_accounts=capital_accounts_for_year, 
+        #     national_accounts=national_accounts_for_year,
+        #     country_code=country_code
+        # )
 
-        df_tangible_investment = get_share_of_tangible_investment_per_gdp(
-            capital_accounts, gdp_for_year, year, tangible_industry_code
-        )
-        dfs_tangible_investment.append(df_tangible_investment)
+        # dfs_tangible_investment.append(df_tangible_investment)
 
-    data_intangible = pd.concat(dfs_intangible_investment).reset_index()
-    data_tangible = pd.concat(dfs_tangible_investment).reset_index()
-
+    data_intangible = pd.concat(dfs_intangible_investment)
+    # data_tangible = pd.concat(dfs_tangible_investment)
+    
     pd.to_pickle(data_intangible, path_to_shares_intangible)
-    pd.to_pickle(data_tangible, path_to_shares_tangible)
+    # pd.to_pickle(data_tangible, path_to_shares_tangible)

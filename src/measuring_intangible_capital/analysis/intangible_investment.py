@@ -156,22 +156,53 @@ def get_intangible_investment_aggregate_types(
     return df
 
 
+# TODO: Refactor
 def get_share_of_tangible_investment_per_gdp(
     capital_accounts: pd.DataFrame,
-    gdp: pd.Series,
-    year: int,
-    industry_code: str = CAPITAL_ACCOUNT_INDUSTRY_CODE,
+    national_accounts: pd.DataFrame,
+    country_code: str
 ):
     """Calculate the share of tangible investment of GDP for a given year.
 
     Args:
-        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
-        gdp (pd.Series): The GDP of a given country.
-        year (int): The year for which to calculate the share of intangible investment.
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given industry, year and country.
+        national_accounts (pd.DataFrame): The national accounts with GDP of a given industry, year and country.
 
     Returns:
         pd.Series: The share of tangible investment as percent of GDP.
     """
-    tangible_assets = capital_accounts.loc[industry_code, year, :]["tangible_assets"]
+    # multi_index = capital_accounts.index
+    # print(f"MultiIndex capital: {capital_accounts.index}")
+    # print(f"MultiIndex national: {national_accounts.index}")
+    df = pd.DataFrame(index=capital_accounts.index)
 
-    return _calculate_investment_share_in_gdp(tangible_assets, gdp)
+    if isinstance(capital_accounts.index, pd.MultiIndex):
+        # print(capital_accounts.loc[:, country_code])
+        tangible_assets = capital_accounts.xs(country_code, level='country_code')["tangible_assets"]
+        # tangible_assets = tangible_assets.reset_index(level="industry_code", drop=True)
+    else:
+        tangible_assets = capital_accounts["tangible_assets"]
+    
+    if isinstance(national_accounts.index, pd.MultiIndex):
+        gdp = national_accounts.xs(country_code, level='country_code')["gdp"]
+        # gdp = gdp.reset_index(level="industry_code", drop=True)
+    else:
+        gdp = national_accounts["gdp"]
+
+    #gdp = national_accounts.loc[:, :, country_code]["gdp"]
+    #tangible_assets = capital_accounts.loc[:, :, country_code]["tangible_assets"]
+
+    # print(type(gdp))
+    # print(type(tangible_assets))
+    # print(gdp)
+    # print(tangible_assets)
+    test = _calculate_investment_share_in_gdp(tangible_assets, gdp)
+    # print(test)
+    # print(f"Result index {test.index}")
+    test.index = capital_accounts.index
+    # print(f"Result index after update {test.index}")
+    # print(f"Data frame index: {df.index}")
+
+    df["tangible_share"] = test #_calculate_investment_share_in_gdp(tangible_assets, gdp)
+    # print(df)
+    return df

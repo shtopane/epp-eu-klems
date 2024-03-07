@@ -15,7 +15,6 @@ from measuring_intangible_capital.config import (
 )
 from measuring_intangible_capital.analysis.intangible_investment import (
     get_intangible_investment_aggregate_types,
-    get_share_of_tangible_investment_per_gdp,
 )
 
 share_intangible_of_gdp_aggregate_2006_deps = {

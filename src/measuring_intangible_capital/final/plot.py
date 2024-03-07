@@ -231,3 +231,33 @@ def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.Da
     )
 
     return fig
+
+def plot_investment_ratio_gdp_per_capita(intangible_investment: pd.DataFrame, tangible_investment: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    by_country_intangible = intangible_investment.groupby("country_code")
+    by_country_tangible = tangible_investment.groupby("country_code")
+    
+    mean_ratio = (by_country_intangible["share_intangible"].mean() / by_country_tangible["share_tangible"].mean())
+    mean_gdp = gdp_per_capita.groupby("country_code")["gdp_per_capita"].mean()
+
+    mean_ratio.name = "intangible_tangible_ratio"
+    df = pd.merge(mean_ratio, mean_gdp, on=["country_code"])
+    df = df.reset_index()
+  
+    
+    fig = px.scatter(df, x="gdp_per_capita", y="intangible_tangible_ratio", color="country_code", text="country_code",
+                 labels={
+                     "gdp_per_capita": "GDP per capita (EKS PPP $)",
+                     "intangible_tangible_ratio": "Intangible/tangible investment"
+                 },
+                 )
+    fig.update_traces(marker=dict(symbol='diamond', color='blue'), textposition='top center')
+    fig.update_layout(
+            title=f"Intangible investment and GDP per capita (2001-04)",
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            showlegend=False,
+            yaxis=dict(
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+    )
+
+    return fig

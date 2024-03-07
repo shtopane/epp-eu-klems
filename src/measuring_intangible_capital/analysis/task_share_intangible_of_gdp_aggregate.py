@@ -61,7 +61,7 @@ for years in share_intangible_of_gdp_aggregate_year_ranges:
             country_code=country_code
             )
 
-            df["intangible_share"] = df.sum(axis=1)
+            df["share_intangible"] = df.sum(axis=1)
             dfs.append(df)
 
         

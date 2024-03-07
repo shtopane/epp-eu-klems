@@ -110,7 +110,7 @@ def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: 
     df = df.reset_index()
     df["country_name"] = add_country_name(df)
 
-    df_melt = df.melt(id_vars='country_name', value_vars=['intangible_share', 'tangible_share' ], var_name='variable', value_name='value')
+    df_melt = df.melt(id_vars='country_name', value_vars=['share_intangible', 'share_tangible' ], var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', barmode='group', title='Bar Chart', color_discrete_sequence=['lavender', 'lightgray'])
 
     fig.update_layout(

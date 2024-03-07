@@ -182,10 +182,10 @@ def get_share_of_tangible_investment_per_gdp(
     tangible_assets = capital_accounts.xs(country_code, level='country_code')["tangible_assets"]
     gdp = national_accounts.xs(country_code, level='country_code')["gdp"]
    
-    tangible_share = _calculate_investment_share_in_gdp(tangible_assets, gdp)
+    share_tangible = _calculate_investment_share_in_gdp(tangible_assets, gdp)
     # TODO: Ensure the index is the same
-    tangible_share.index = df.index
+    share_tangible.index = df.index
     
 
-    df["tangible_share"] = tangible_share
+    df["share_tangible"] = share_tangible
     return df

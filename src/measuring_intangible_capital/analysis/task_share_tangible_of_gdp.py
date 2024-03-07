@@ -31,7 +31,7 @@ share_tangible_of_gdp_deps = {
 share_tangible_of_gdp_year_ranges = [[2006], range(2000, 2005)]
 
 for years in share_tangible_of_gdp_year_ranges:
-    share_tangible_name = f"{years}" if type(years) == int else f"{years.start}_{years.stop - 1}"
+    share_tangible_name = f"{years[0]}" if type(years) == list else f"{years.start}_{years.stop - 1}"
 
     @task(id=share_tangible_name)
     def task_share_tangible_of_gdp(
@@ -52,10 +52,10 @@ for years in share_tangible_of_gdp_year_ranges:
             capital_industry_code = NATIONAL_ACCOUNT_INDUSTRY_CODE if country_code == "EL" else CAPITAL_ACCOUNT_INDUSTRY_CODE
             
             # TODO: Test this is a correct type (pd.DataFrame)
-            national_accounts_for_years = national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, years, :]
+            national_accounts_for_years = national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, list(years), :]
             national_accounts_for_years = national_accounts_for_years.reset_index(level="industry_code", drop=True)
 
-            capital_accounts_for_years = capital_accounts.loc[capital_industry_code, years, :]
+            capital_accounts_for_years = capital_accounts.loc[capital_industry_code, list(years), :]
             capital_accounts_for_years = capital_accounts_for_years.reset_index(level="industry_code", drop=True)
 
             df = get_share_of_tangible_investment_per_gdp(

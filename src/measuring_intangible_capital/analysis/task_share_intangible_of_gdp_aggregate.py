@@ -34,7 +34,7 @@ for years in share_intangible_of_gdp_aggregate_year_ranges:
     def task_share_intangible_of_gdp_aggregate(
         years=years,
         depends_on=share_intangible_of_gdp_aggregate_deps,
-        path_to_shares_intangible: Annotated[Path, Product] = BLD_PYTHON / "share_intangible" / f"gdp_aggregate_{years}.pkl",
+        path_to_shares_intangible: Annotated[Path, Product] = BLD_PYTHON / "share_intangible" / f"gdp_aggregate_{years[0]}.pkl",
     ):
         """Calculate the share of intangible investment of GDP for each country and aggregate category for selected years.
         Each category is: computerized_information, innovative_property, economic_competencies

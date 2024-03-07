@@ -39,6 +39,21 @@ COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
 COUNTRY_COLOR_MAP = dict(zip(COUNTRY_CODES, PLOT_COLORS_BY_COUNTRY))
 
+"""Columns on investment which make up intangible investment. 
+Each of this type is aggregated up to @see INTANGIBLE_AGGREGATE_CATEGORIES
+"""
+INTANGIBLE_DETAIL_CATEGORIES = [
+    "brand",
+    "design",
+    "new_financial_product",
+    "entertainment_and_artistic",
+    "organizational_capital",
+    "research_and_development",
+    "software_and_databases",
+    "training",
+]
+
+"""Columns on intangible investment as classified by CHS (2005)"""
 INTANGIBLE_AGGREGATE_CATEGORIES = [
     "computerized_information",
     "innovative_property",

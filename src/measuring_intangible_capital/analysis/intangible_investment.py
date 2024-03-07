@@ -6,6 +6,7 @@ from measuring_intangible_capital.config import (
     CAPITAL_ACCOUNT_INDUSTRY_CODE,
     INTANGIBLE_AGGREGATE_CATEGORIES,
     INTANGIBLE_AGGREGATE_CATEGORIES_TYPE,
+    INTANGIBLE_DETAIL_CATEGORIES,
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
 
@@ -63,72 +64,28 @@ def _aggregate_intangible_investment(
 
     return df.loc[industry_code, year, :][columns].sum(axis=1)
 
-
-def get_country_total_gdp_intangible_investment(
-    capital_accounts: pd.DataFrame,
-    national_accounts: pd.DataFrame,
-    country_code: str,
-    years: range,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Get totals from capital and national accounts for a country for specific years and industry codes.
-    For national accounts - total GDP (VA_CP) is under the industry code "TOT"
-    For capital accounts - total of each intangible investment column under the industry code "MARKT"
-    Intangible investment are all columns except for "tangible_assets"
-
-    Args:
-        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
-        national_accounts (pd.DataFrame): The national accounts data set for a given country.
-        country_code (str): For which country to get the data(AT, CZ, DK, EL, SK)
-        years (range): for which years to get the data(1995-2006)
-
-    Returns:
-        tuple[pd.DataFrame, pd.DataFrame]: the sliced capital and national accounts
-    """
-
-    capital_accounts_for_years = capital_accounts.loc[
-        CAPITAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
-    ]
-
-    # Include only intangible investment columns
-    capital_accounts_for_years = capital_accounts_for_years.drop(
-        columns="tangible_assets", axis=1
-    )
-
-    national_accounts_for_years = national_accounts.loc[
-        NATIONAL_ACCOUNT_INDUSTRY_CODE, list(years), country_code
-    ]
-
-    return capital_accounts_for_years, national_accounts_for_years
-
-
 def get_share_of_intangible_investment_per_gdp(
-    capital_accounts_for_years: pd.DataFrame, national_accounts_for_years: pd.DataFrame
+    capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
 ) -> pd.DataFrame:
     """Calculate investment levels and shares of intangible investment for a country.
-    Merge with a country GDP data set.
+    Investment levels are calculated as the sum of intangible assets for all industries.
 
     Args:
-        capital_accounts_for_years (pd.DataFrame): _description_
-        national_accounts_for_years (pd.DataFrame): _description_
+        capital_accounts (pd.DataFrame): data set with investment levels for all industries
+        national_accounts (pd.DataFrame): data set with GDP for all industries
 
     Returns:
-        pd.DataFrame: the merged data set(investment data and GDP data)
+        pd.DataFrame: investment levels and shares of intangible investment.
     """
 
     df = pd.DataFrame()
-    df["investment_level"] = capital_accounts_for_years.sum(axis=1)
-
-    data_merged = pd.merge(
-        df, national_accounts_for_years, on=["year", "country_code"], how="inner"
+    
+    df["investment_level"] = capital_accounts[INTANGIBLE_DETAIL_CATEGORIES].sum(axis=1)
+    df["share_intangible"] = _calculate_investment_share_in_gdp(
+        df["investment_level"], national_accounts["gdp"]
     )
 
-    data_merged["share_intangible"] = _calculate_investment_share_in_gdp(
-        data_merged["investment_level"], data_merged["gdp"]
-    )
-
-    # Make year selectable
-    data_merged.reset_index(inplace=True)
-    return data_merged
+    return df
 
 def get_composition_of_value_added(
         growth_accounts: pd.DataFrame,

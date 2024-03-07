@@ -18,6 +18,8 @@ def plot_share_intangibles_all_countries(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
+    df = df.reset_index()
+
     fig = px.line(
         df,
         x="year",
@@ -208,7 +210,7 @@ def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.Da
     df_share_mean = intangible_investment_share.groupby('country_code')['share_intangible'].mean().reset_index()
     df_gdp_mean = gdp_per_capita.groupby('country_code')['gdp_per_capita'].mean().reset_index()
     df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
-    
+
     fig = px.scatter(df, x="gdp_per_capita", y="share_intangible", color="country_code", text="country_code",
                  labels={
                      "gdp_per_capita": "GDP per capita (EKS PPP $)",

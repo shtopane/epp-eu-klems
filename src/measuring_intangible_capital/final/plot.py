@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import pandas as pd
 import math
 
-from measuring_intangible_capital.config import COUNTRY_CODES, COUNTRY_CODES_EXTENDED, COUNTRY_COLOR_MAP, COUNTRY_COLOR_MAP_EXTENDED, INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
+from measuring_intangible_capital.config import COUNTRY_CODES, COUNTRY_CODES_EXTENDED, COUNTRY_COLOR_MAP, COUNTRY_COLOR_MAP_EXTENDED, INTANGIBLE_AGGREGATE_CATEGORIES, LABOUR_COMPOSITION_COLOR_MAP, LABOUR_COMPOSITION_COLUMNS_EXTENDED, PLOT_COLORS_BY_COUNTRY
 from measuring_intangible_capital.utilities import ADD_COUNTRY_NAME_MODE, add_country_name_all_countries, add_country_name_extended_countries, add_country_name_main_countries
 
 def plot_share_intangibles_for_main_countries(df: pd.DataFrame):
@@ -207,18 +207,14 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
     df = df.reset_index()
     df["country_name"] = add_country_name_all_countries(df)
 
-    columns = [col for col in df.columns if col not in ['country_code', 'country_name', 'labour_productivity']]
-    color_map = {
-        'intangible': 'royalblue',
-        'labour_composition': 'gray',
-        'tangible_ICT': 'lightsteelblue',
-        'tangible_nonICT': 'darkgray',
-        'mfp': 'lavender'
-    }
-
     fig = go.Figure(data=[
-        go.Bar(name=column, x=df['country_name'], y=df[column], marker_color=color_map[column]) for column in columns
+        _get_bar_for_labour_composition(
+            df=df,
+            column_name=column, 
+            marker_color=LABOUR_COMPOSITION_COLOR_MAP[column]
+        ) for column in LABOUR_COMPOSITION_COLUMNS_EXTENDED
     ])
+
     fig.update_layout(
             title="Contribution of inputs to labour productivity growth, annual average (percent), 1995-2006",
             barmode='stack', 
@@ -252,18 +248,11 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
         _type_: _description_
     """
     # TODO: Not liking this... refactor or think how to make it better
-    data_for_plotting = df.copy()
-
-    # Check if the DataFrame has a default index
-    if data_for_plotting.index.equals(pd.RangeIndex(start=0, stop=len(df))):
-        print("DataFrame has a default index.")
-    else:
-        print("DataFrame has a custom index. Resetting index.")
-        data_for_plotting.reset_index(inplace=True)
+    df = df.reset_index()
     
-    data_for_plotting["country_name"] = add_country_name_all_countries(data_for_plotting)
+    df["country_name"] = add_country_name_all_countries(df)
     
-    df_melted = data_for_plotting.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='component', value_name='value')
+    df_melted = df.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='component', value_name='value')
 
     fig = px.bar(df_melted, x='country_name', y='value', color='component', barmode='stack', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
 
@@ -343,3 +332,6 @@ def plot_investment_ratio_gdp_per_capita(intangible_investment: pd.DataFrame, ta
     )
 
     return fig
+
+def _get_bar_for_labour_composition(df: pd.DataFrame, column_name: str, marker_color: str):
+        return go.Bar(name=column_name, x=df['country_name'], y=df[column_name], marker_color=marker_color)

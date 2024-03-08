@@ -285,15 +285,14 @@ def plot_intangible_investment_gdp_per_capita(
     intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame
 ):
     """Create Figure 5a: Intangible investment and GDP per capita (2001-04)"""
-    df_share_mean = (
-        intangible_investment_share.groupby("country_code")["share_intangible"]
-        .mean()
-        .reset_index()
-    )
-    df_gdp_mean = (
-        gdp_per_capita.groupby("country_code")["gdp_per_capita"].mean().reset_index()
-    )
-    df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
+    by_country_intangible = intangible_investment_share.groupby(level="country_code", observed=True)
+    by_country_gdp = gdp_per_capita.groupby(level="country_code", observed=True)
+
+    mean_intangible_share: pd.Series = by_country_intangible["share_intangible"].mean()
+    mean_gdp_per_capita: pd.Series = by_country_gdp["gdp_per_capita"].mean()
+    
+    df = pd.concat([mean_intangible_share, mean_gdp_per_capita], axis=1)
+    df = df.reset_index()
 
     fig = px.scatter(
         df,
@@ -325,17 +324,19 @@ def plot_investment_ratio_gdp_per_capita(
     gdp_per_capita: pd.DataFrame,
 ):
     """Create Figure 5b: Intangible investment ratio and GDP per capita (2001-04)"""
-    by_country_intangible = intangible_investment.groupby("country_code")
-    by_country_tangible = tangible_investment.groupby("country_code")
+    by_country_intangible = intangible_investment.groupby(level="country_code", observed=True)
+    by_country_tangible = tangible_investment.groupby(level="country_code", observed=True)
+    by_country_gdp = gdp_per_capita.groupby(level="country_code", observed=True)
 
-    mean_ratio = (
-        by_country_intangible["share_intangible"].mean()
-        / by_country_tangible["share_tangible"].mean()
-    )
-    mean_gdp = gdp_per_capita.groupby("country_code")["gdp_per_capita"].mean()
+    mean_gdp_per_capita: pd.Series = by_country_gdp["gdp_per_capita"].mean()
 
+    mean_intangible_share = by_country_intangible["share_intangible"].mean()
+    mean_tangible_share = by_country_tangible["share_tangible"].mean()
+    
+    mean_ratio: pd.Series = mean_intangible_share / mean_tangible_share
     mean_ratio.name = "intangible_tangible_ratio"
-    df = pd.merge(mean_ratio, mean_gdp, on=["country_code"])
+
+    df = pd.concat([mean_ratio, mean_gdp_per_capita], axis=1)
     df = df.reset_index()
 
     fig = px.scatter(

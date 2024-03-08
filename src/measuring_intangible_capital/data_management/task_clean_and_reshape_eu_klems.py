@@ -15,15 +15,15 @@ from measuring_intangible_capital.utilities import (
     get_eu_klems_download_paths,
     read_yaml,
 )
-from measuring_intangible_capital.data_management.clean_data import (
+from measuring_intangible_capital.data_management.clean_eu_klems_data import (
     read_data,
     clean_and_reshape_eu_klems,
     read_growth_accounts,
 )
 
 clean_data_deps = {
-    "scripts": Path("clean_data.py"),
-    "data_info": SRC / "data_management" / "data_info.yaml",
+    "scripts": Path("clean_eu_klems_data.py"),
+    "data_info": SRC / "data_management" / "eu_klems_data_info.yaml",
 }
 
 for country in COUNTRY_CODES:

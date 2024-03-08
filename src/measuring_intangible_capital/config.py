@@ -5,7 +5,13 @@ from typing import Literal
 
 # DATA Related constants
 FILES_TO_EXCLUDE = ["growth_accounts.xlsx", "growth%20accounts"]
-FILES_TO_DOWNLOAD_NAMES = ['National Accounts', 'Capital', 'Labour', 'Intangibles', 'Growth Accounts Basic']
+FILES_TO_DOWNLOAD_NAMES = [
+    "National Accounts",
+    "Capital",
+    "Labour",
+    "Intangibles",
+    "Growth Accounts Basic",
+]
 EU_KLEMS_WEBSITE = "https://euklems-intanprod-llee.luiss.it/download/"
 EU_KLEMS_FILE_NAMES = [
     "capital_accounts",
@@ -27,18 +33,36 @@ PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 # Analysis variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
+COUNTRY_CODES_MAP = {"AUT": "AT", "CZE": "CZ", "DNK": "DK", "GRC": "EL", "SVK": "SK"}
 COUNTRY_CODES_LESS_SK = ["AT", "CZ", "DK", "EL"]
 COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
 COUNTRY_COLOR_MAP = dict(zip(COUNTRY_CODES, PLOT_COLORS_BY_COUNTRY))
 
+"""Columns on investment which make up intangible investment. 
+Each of this type is aggregated up to @see INTANGIBLE_AGGREGATE_CATEGORIES
+"""
+INTANGIBLE_DETAIL_CATEGORIES = [
+    "brand",
+    "design",
+    "new_financial_product",
+    "entertainment_and_artistic",
+    "organizational_capital",
+    "research_and_development",
+    "software_and_databases",
+    "training",
+]
+
+"""Columns on intangible investment as classified by CHS (2005)"""
 INTANGIBLE_AGGREGATE_CATEGORIES = [
     "computerized_information",
     "innovative_property",
     "economic_competencies",
 ]
 
-INTANGIBLE_AGGREGATE_CATEGORIES_TYPE = Literal['computerized_information', 'innovative_property', 'economic_competencies']
+INTANGIBLE_AGGREGATE_CATEGORIES_TYPE = Literal[
+    "computerized_information", "innovative_property", "economic_competencies"
+]
 
 CAPITAL_ACCOUNT_INDUSTRY_CODE = "MARKT"
 NATIONAL_ACCOUNT_INDUSTRY_CODE = "TOT"

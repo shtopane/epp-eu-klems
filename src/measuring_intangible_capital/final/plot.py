@@ -18,6 +18,8 @@ def plot_share_intangibles_all_countries(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
+    df = df.reset_index()
+
     fig = px.line(
         df,
         x="year",
@@ -77,6 +79,7 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
+    df = df.reset_index()
     df["country_name"] = add_country_name(df)
     df_melt = df.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
@@ -102,10 +105,12 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
 
     return fig
 
-def plot_share_tangible_to_intangible(df: pd.DataFrame):
+def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: pd.DataFrame):
+    df = pd.concat([intangible_df, tangible_df], axis=1)
+    df = df.reset_index()
     df["country_name"] = add_country_name(df)
 
-    df_melt = df.melt(id_vars='country_name', value_vars=['intangible_assets', 'tangible_assets' ], var_name='variable', value_name='value')
+    df_melt = df.melt(id_vars='country_name', value_vars=['share_intangible', 'share_tangible' ], var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', barmode='group', title='Bar Chart', color_discrete_sequence=['lavender', 'lightgray'])
 
     fig.update_layout(
@@ -203,3 +208,56 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     )
     return fig
 
+
+def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    df_share_mean = intangible_investment_share.groupby('country_code')['share_intangible'].mean().reset_index()
+    df_gdp_mean = gdp_per_capita.groupby('country_code')['gdp_per_capita'].mean().reset_index()
+    df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
+
+    fig = px.scatter(df, x="gdp_per_capita", y="share_intangible", color="country_code", text="country_code",
+                 labels={
+                     "gdp_per_capita": "GDP per capita (EKS PPP $)",
+                     "share_intangible": "Intangible investment (%GDP)"
+                 },
+                 )
+    fig.update_traces(marker=dict(symbol='diamond', color='blue'), textposition='top center')
+    fig.update_layout(
+            title=f"Intangible investment and GDP per capita (2001-04)",
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            showlegend=False,
+            yaxis=dict(
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+    )
+
+    return fig
+
+def plot_investment_ratio_gdp_per_capita(intangible_investment: pd.DataFrame, tangible_investment: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    by_country_intangible = intangible_investment.groupby("country_code")
+    by_country_tangible = tangible_investment.groupby("country_code")
+    
+    mean_ratio = (by_country_intangible["share_intangible"].mean() / by_country_tangible["share_tangible"].mean())
+    mean_gdp = gdp_per_capita.groupby("country_code")["gdp_per_capita"].mean()
+
+    mean_ratio.name = "intangible_tangible_ratio"
+    df = pd.merge(mean_ratio, mean_gdp, on=["country_code"])
+    df = df.reset_index()
+  
+    
+    fig = px.scatter(df, x="gdp_per_capita", y="intangible_tangible_ratio", color="country_code", text="country_code",
+                 labels={
+                     "gdp_per_capita": "GDP per capita (EKS PPP $)",
+                     "intangible_tangible_ratio": "Intangible/tangible investment"
+                 },
+                 )
+    fig.update_traces(marker=dict(symbol='diamond', color='blue'), textposition='top center')
+    fig.update_layout(
+            title=f"Intangible investment and GDP per capita (2001-04)",
+            plot_bgcolor="rgba(0,0,0,0)",  # Transparent background
+            showlegend=False,
+            yaxis=dict(
+                gridcolor="gray",  # Only horizontal grid lines
+            ),
+    )
+
+    return fig

@@ -9,7 +9,7 @@ from measuring_intangible_capital.config import (
     BLD_PYTHON,
     SRC,
 )
-from measuring_intangible_capital.final.plot import (
+from measuring_intangible_capital.plotting.plot import (
     plot_share_intangibles_for_extended_countries,
     plot_share_intangibles_for_main_countries,
 )

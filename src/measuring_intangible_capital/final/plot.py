@@ -108,9 +108,10 @@ def _plot_share_intangibles_for_countries(
 
     max_share_intangible = df["share_intangible"].max()
 
-    fig.update_layout(_default_fig_layout(
-        title=f"Share Intangible for All Countries ({start_year}-{end_year})",
-        yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
+    fig.update_layout(
+        _default_fig_layout(
+            title=f"Share Intangible for All Countries ({start_year}-{end_year})",
+            yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
         ),
         xaxis=dict(
             tickmode="array",  # Show every year
@@ -118,7 +119,7 @@ def _plot_share_intangibles_for_countries(
             showgrid=False,  # No grid for the x-axis
         ),
         xaxis_title="Year",
-        )
+    )
 
     return fig
 
@@ -152,7 +153,11 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
         color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3],
     )
 
-    fig.update_layout(_default_fig_layout(title="Intangible investment in the market sector (percent of GDP), 2006"))
+    fig.update_layout(
+        _default_fig_layout(
+            title="Intangible investment in the market sector (percent of GDP), 2006"
+        )
+    )
 
     return fig
 
@@ -192,7 +197,11 @@ def plot_share_tangible_to_intangible(
         color_discrete_sequence=["lavender", "lightgray"],
     )
 
-    fig.update_layout(_default_fig_layout(title="Intangible to tangible investment (percent of GDP), 2006"))
+    fig.update_layout(
+        _default_fig_layout(
+            title="Intangible to tangible investment (percent of GDP), 2006"
+        )
+    )
     return fig
 
 
@@ -297,14 +306,13 @@ def plot_intangible_investment_gdp_per_capita(
             "share_intangible": "Intangible investment (%GDP)",
         },
     )
-    fig.update_traces(
-        marker=dict(symbol="diamond", color="blue"), textposition="top center"
-    )
+
+    fig.update_traces(_default_diamond_marker())
 
     fig.update_layout(
         _default_fig_layout(
-            title="Intangible investment and GDP per capita (2001-04)", 
-            show_legend=False
+            title="Intangible investment and GDP per capita (2001-04)",
+            show_legend=False,
         )
     )
 
@@ -342,9 +350,7 @@ def plot_investment_ratio_gdp_per_capita(
         },
     )
 
-    fig.update_traces(
-        marker=dict(symbol="diamond", color="blue"), textposition="top center"
-    )
+    fig.update_traces(_default_diamond_marker())
 
     fig.update_layout(
         _default_fig_layout(
@@ -399,6 +405,16 @@ def _default_legend():
         "y": -0.2,  # Adjust this value to move the legend up or down
         "xanchor": "center",
         "x": 0.5,  # Center the legend
+    }
+
+
+def _default_diamond_marker():
+    """Makes the data dots in the scatter plot diamond shaped and blue.
+    The text is displayed on top of the diamond.
+    """
+    return {
+        "marker": dict(symbol="diamond", color="blue"),
+        "textposition": "top center",
     }
 
 

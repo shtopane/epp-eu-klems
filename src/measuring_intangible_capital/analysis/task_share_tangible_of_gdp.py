@@ -5,26 +5,20 @@ import pandas as pd
 from pytask import Product, task
 
 from measuring_intangible_capital.config import (
+    ALL_COUNTRY_CODES,
     BLD_PYTHON,
     CAPITAL_ACCOUNT_INDUSTRY_CODE,
-    COUNTRY_CODES,
-    DATA_CLEAN_PATH,
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
 from measuring_intangible_capital.analysis.intangible_investment import (
     get_share_of_tangible_investment_per_gdp,
 )
+from measuring_intangible_capital.utilities import get_account_data_path_for_countries
 
 share_tangible_of_gdp_deps = {
     "scripts": [Path("intangible_investment.py")],
-    "capital_accounts": [
-        Path(DATA_CLEAN_PATH / country_code / "capital_accounts.pkl")
-        for country_code in COUNTRY_CODES
-    ],
-    "national_accounts": [
-        Path(DATA_CLEAN_PATH / country_code / "national_accounts.pkl")
-        for country_code in COUNTRY_CODES
-    ],
+    "capital_accounts": get_account_data_path_for_countries("capital"),
+    "national_accounts": get_account_data_path_for_countries("national")
 }
 # 2006
 # range(2000, 2005)
@@ -44,7 +38,7 @@ for years in share_tangible_of_gdp_year_ranges:
         """
         dfs = []
 
-        for index, country_code in enumerate(COUNTRY_CODES):
+        for index, country_code in enumerate(ALL_COUNTRY_CODES):
             capital_accounts: pd.DataFrame = pd.read_pickle(depends_on["capital_accounts"][index])
             national_accounts: pd.DataFrame = pd.read_pickle(depends_on["national_accounts"][index])
             

@@ -104,6 +104,17 @@ INTANGIBLE_DETAIL_CATEGORIES = [
     "training",
 ]
 
+INTANGIBLE_DETAIL_CATEGORIES_TYPE = Literal[
+    "brand",
+    "design",
+    "new_financial_product",
+    "entertainment_and_artistic",
+    "organizational_capital",
+    "research_and_development",
+    "software_and_databases",
+    "training",
+]
+
 """Columns on intangible investment as classified by CHS (2005)"""
 INTANGIBLE_AGGREGATE_CATEGORIES = [
     "computerized_information",
@@ -122,7 +133,7 @@ LABOUR_COMPOSITION_COLUMNS = [
     "intangible",
     "labour_composition",
     "tangible_ICT",
-    "tangible_nonICT"
+    "tangible_nonICT",
 ]
 MPF_COLUMN = "mfp"
 LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]

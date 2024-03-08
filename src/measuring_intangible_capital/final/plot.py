@@ -14,6 +14,7 @@ from measuring_intangible_capital.config import (
     INTANGIBLE_AGGREGATE_CATEGORIES,
     LABOUR_COMPOSITION_COLOR_MAP,
     LABOUR_COMPOSITION_COLUMNS_EXTENDED,
+    PLOT_COLORS_AGGREGATE_CATEGORIES,
     PLOT_COLORS_BY_COUNTRY,
 )
 from measuring_intangible_capital.utilities import (
@@ -150,7 +151,7 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
         x="country_name",
         y="value",
         color="variable",
-        color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3],
+        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES,
     )
 
     fig.update_layout(
@@ -251,9 +252,7 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     Returns:
         _type_: _description_
     """
-    # TODO: Not liking this... refactor or think how to make it better
     df = df.reset_index()
-
     df["country_name"] = add_country_name_all_countries(df)
 
     df_melted = df.melt(
@@ -269,7 +268,7 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
         y="value",
         color="component",
         barmode="stack",
-        color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3],
+        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES,
     )
 
     fig.update_layout(

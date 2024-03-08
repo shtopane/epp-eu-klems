@@ -58,6 +58,8 @@ COUNTRIES_EXTENDED = [
 ]
 
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
+PLOT_COLORS_AGGREGATE_CATEGORIES = ["gray", "darkgray", "lavender"]
+
 PLOT_COLORS_BY_COUNTRY_EXTENDED = [
     "gray",
     "lavender",

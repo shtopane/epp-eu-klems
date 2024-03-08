@@ -10,7 +10,15 @@ from measuring_intangible_capital.config import COUNTRY_CODES, COUNTRY_CODES_EXT
 from measuring_intangible_capital.utilities import ADD_COUNTRY_NAME_MODE, add_country_name_all_countries, add_country_name_extended_countries, add_country_name_main_countries
 
 def plot_share_intangibles_for_main_countries(df: pd.DataFrame):
-    """Figure 1b: Share Intangible for main countries (1995-2006)"""
+    """Create Figure 1b: Share Intangible for the main countries (1995-2006)
+    Main countries are: Austria, Czech Republic, Denmark, Greece, and Slovakia.
+
+    Args:
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+
+    Returns:
+        Figure: the plotly figure
+    """
     fig = _plot_share_intangibles_for_countries(
         df = df,
         country_codes = COUNTRY_CODES,
@@ -21,7 +29,15 @@ def plot_share_intangibles_for_main_countries(df: pd.DataFrame):
     return fig
 
 def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
-    """Figure 1a: Share Intangible for extended countries (1995-2006)"""
+    """Create Figure 1b: Share Intangible for the extended countries (1995-2006)
+    Extended countries are: US, UK, Germany, France, Spain, and Italy.
+    
+    Args:
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+
+    Returns:
+        Figure: the plotly figure
+    """
     fig = _plot_share_intangibles_for_countries(
         df = df,
         country_codes = COUNTRY_CODES_EXTENDED,
@@ -49,7 +65,6 @@ def _plot_share_intangibles_for_countries(df: pd.DataFrame, country_codes: list,
         df["country_name"] = add_country_name_extended_countries(df)
     else:
         df["country_name"] = add_country_name_all_countries(df)
-
 
     fig = px.line(
         df,
@@ -102,7 +117,8 @@ def _plot_share_intangibles_for_countries(df: pd.DataFrame, country_codes: list,
     return fig
 
 def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
-    """Create Figure 2: Share Intangible of GDP for All Countries (1995-2006)
+    """Create Figure 2: Intangible investment in the market sector (percent of GDP), 2006
+    For all countries.
 
     Args:
         df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
@@ -140,6 +156,16 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     return fig
 
 def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: pd.DataFrame):
+    """Create Figure 3: Intangible and tangible investment in the market sector (percent of GDP), 2006
+    For all countries.
+
+    Args:
+        intangible_df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+        tangible_df (pd.DataFrame): data set containing share_tangible, year, and country_code columns for all countries
+    
+    Returns:
+        Figure: the plotly figure
+    """
     df = pd.concat([intangible_df, tangible_df], axis=1)
 
     df = df.reset_index()
@@ -168,14 +194,16 @@ def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: 
     return fig
 
 def plot_composition_of_labour_productivity(df: pd.DataFrame):
-    """Figure 4a: Composition of labour productivity growth for all countries
+    """Create Figure 4a: Contribution of inputs to labour productivity growth, annual average (percent), 1995-2006
+    For all countries
 
     Args:
-        df (pd.DataFrame): _description_
+        df (pd.DataFrame): 
 
     Returns:
         _type_: _description_
     """
+
     df = df.reset_index()
     df["country_name"] = add_country_name_all_countries(df)
 
@@ -213,7 +241,9 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
     return fig
 
 def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
-    """Figure 4b: Contribution of sub-components of intangibles to labour productivity growth for all countries
+    """Create Figure 4b: Contribution of sub-components of intangibles to labour productivity growth, annual 
+    average (percent), 1995-2006
+    For all countries
 
     Args:
         df (pd.DataFrame): _description_
@@ -260,7 +290,7 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
 
 
 def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame):
-    """Figure 5a: Intangible investment and GDP per capita (2001-04)"""
+    """Create Figure 5a: Intangible investment and GDP per capita (2001-04)"""
     df_share_mean = intangible_investment_share.groupby('country_code')['share_intangible'].mean().reset_index()
     df_gdp_mean = gdp_per_capita.groupby('country_code')['gdp_per_capita'].mean().reset_index()
     df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
@@ -284,7 +314,7 @@ def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.Da
     return fig
 
 def plot_investment_ratio_gdp_per_capita(intangible_investment: pd.DataFrame, tangible_investment: pd.DataFrame, gdp_per_capita: pd.DataFrame):
-    """Figure 5b: Intangible investment and GDP per capita (2001-04)"""
+    """Create Figure 5b: Intangible investment ratio and GDP per capita (2001-04) """
     by_country_intangible = intangible_investment.groupby("country_code")
     by_country_tangible = tangible_investment.groupby("country_code")
     

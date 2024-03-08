@@ -237,10 +237,10 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     For all countries
 
     Args:
-        df (pd.DataFrame): _description_
+        df (pd.DataFrame): data set containing computerized_information, innovative_property, economic_competencies, columns for all countries
 
     Returns:
-        _type_: _description_
+        Figure: the plotly figure
     """
     df = df.reset_index()
     df["country_name"] = add_country_name_all_countries(df)
@@ -273,7 +273,14 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
 def plot_intangible_investment_gdp_per_capita(
     intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame
 ):
-    """Create Figure 5a: Intangible investment and GDP per capita (2001-04)"""
+    """Create Figure 5a: Intangible investment and GDP per capita (2001-04)
+    For all countries
+    Args:
+        intangible_investment_share (pd.DataFrame): data set containing share_intangible column for all countries
+        gdp_per_capita (pd.DataFrame): data set containing gdp_per_capita column for all countries
+    Returns:
+        Figure: the plotly figure
+    """
     by_country_intangible = intangible_investment_share.groupby(
         level="country_code", observed=True
     )
@@ -312,7 +319,15 @@ def plot_investment_ratio_gdp_per_capita(
     tangible_investment: pd.DataFrame,
     gdp_per_capita: pd.DataFrame,
 ):
-    """Create Figure 5b: Intangible investment ratio and GDP per capita (2001-04)"""
+    """Create Figure 5b: Intangible investment ratio and GDP per capita (2001-04)
+    For all countries
+    Args:
+        intangible_investment (pd.DataFrame): data set containing share_intangible column for all countries
+        tangible_investment (pd.DataFrame): data set containing share_tangible column for all countries
+        gdp_per_capita (pd.DataFrame): data set containing gdp_per_capita column for all countries
+    Returns:
+        Figure: the plotly figure
+    """
     by_country_intangible = intangible_investment.groupby(
         level="country_code", observed=True
     )

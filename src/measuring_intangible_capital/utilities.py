@@ -17,6 +17,7 @@ from measuring_intangible_capital.config import (
     EU_KLEMS_FILE_NAMES,
 )
 
+ADD_COUNTRY_NAME_MODE = Literal["main", "extended", "all"]
 
 def read_yaml(path):
     """Read a YAML file.
@@ -40,7 +41,7 @@ def read_yaml(path):
     return out
 
 
-def _add_country_name(df: pd.DataFrame, mode: Literal["main", "extended", "all"] = "main") -> pd.Series:
+def _add_country_name(df: pd.DataFrame, mode: ADD_COUNTRY_NAME_MODE = "main") -> pd.Series:
     """Add country name to a data frame based on country codes.
 
     Args:

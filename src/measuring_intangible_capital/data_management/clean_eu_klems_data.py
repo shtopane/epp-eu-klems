@@ -3,7 +3,7 @@
 import pandas as pd
 
 from measuring_intangible_capital.config import BLD, EU_KLEMS_DATA_DOWNLOAD_PATH
-from measuring_intangible_capital.data_management.data_utilities import clean_data
+from measuring_intangible_capital.data_management.utilities import clean_data
 from measuring_intangible_capital.utilities import read_yaml
 
 

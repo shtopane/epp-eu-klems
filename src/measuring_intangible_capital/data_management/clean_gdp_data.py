@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from measuring_intangible_capital.config import ALL_COUNTRY_CODES, ALL_COUNTRY_CODES_MAP
-from measuring_intangible_capital.data_management.data_utilities import clean_data
+from measuring_intangible_capital.data_management.utilities import clean_data
 
 def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     """Read the data from the World Bank.

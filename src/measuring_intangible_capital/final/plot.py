@@ -6,10 +6,32 @@ import plotly.graph_objects as go
 import pandas as pd
 import math
 
-from measuring_intangible_capital.config import INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
+from measuring_intangible_capital.config import COUNTRY_CODES, COUNTRY_CODES_EXTENDED, COUNTRY_COLOR_MAP, COUNTRY_COLOR_MAP_EXTENDED, INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
 from measuring_intangible_capital.utilities import ADD_COUNTRY_NAME_MODE, add_country_name_all_countries, add_country_name_extended_countries, add_country_name_main_countries
 
-def plot_share_intangibles_for_countries(df: pd.DataFrame, country_codes: list, country_color_map: dict, mode: ADD_COUNTRY_NAME_MODE):
+def plot_share_intangibles_for_main_countries(df: pd.DataFrame):
+    """Figure 1b: Share Intangible for main countries (1995-2006)"""
+    fig = _plot_share_intangibles_for_countries(
+        df = df,
+        country_codes = COUNTRY_CODES,
+        country_color_map = COUNTRY_COLOR_MAP,
+        mode = "main"
+    )
+
+    return fig
+
+def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
+    """Figure 1a: Share Intangible for extended countries (1995-2006)"""
+    fig = _plot_share_intangibles_for_countries(
+        df = df,
+        country_codes = COUNTRY_CODES_EXTENDED,
+        country_color_map = COUNTRY_COLOR_MAP_EXTENDED,
+        mode = "extended"
+    )
+
+    return fig
+
+def _plot_share_intangibles_for_countries(df: pd.DataFrame, country_codes: list, country_color_map: dict, mode: ADD_COUNTRY_NAME_MODE):
     """Create Figure 1: Share Intangible for selected countries (1995-2006)
 
     Args:

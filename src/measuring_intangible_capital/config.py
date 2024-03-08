@@ -43,18 +43,36 @@ COUNTRY_CODES_MAP_EXTENDED = {
     "FRA": "FR",
     "DEU": "DE",
     "ITA": "IT",
-    "ESP": "ES"
+    "ESP": "ES",
 }
 
 COUNTRY_CODES_LESS_SK = ["AT", "CZ", "DK", "EL"]
 COUNTRIES = ["Austria", "Czech Republic", "Denmark", "Greece", "Slovakia"]
-COUNTRIES_EXTENDED = ["United States", "United Kingdom", "Germany", "France", "Italy", "Spain"]
+COUNTRIES_EXTENDED = [
+    "United States",
+    "United Kingdom",
+    "Germany",
+    "France",
+    "Italy",
+    "Spain",
+]
 
 PLOT_COLORS_BY_COUNTRY = ["gray", "darkgray", "lavender", "lightsteelblue", "royalblue"]
-PLOT_COLORS_BY_COUNTRY_EXTENDED = ["gray", "lavender",  "royalblue", "lightsteelblue", "darkgray", "black"]
+PLOT_COLORS_AGGREGATE_CATEGORIES = ["gray", "darkgray", "lavender"]
+
+PLOT_COLORS_BY_COUNTRY_EXTENDED = [
+    "gray",
+    "lavender",
+    "royalblue",
+    "lightsteelblue",
+    "darkgray",
+    "black",
+]
 
 COUNTRY_COLOR_MAP = dict(zip(COUNTRIES, PLOT_COLORS_BY_COUNTRY))
-COUNTRY_COLOR_MAP_EXTENDED = dict(zip(COUNTRIES_EXTENDED, PLOT_COLORS_BY_COUNTRY_EXTENDED))
+COUNTRY_COLOR_MAP_EXTENDED = dict(
+    zip(COUNTRIES_EXTENDED, PLOT_COLORS_BY_COUNTRY_EXTENDED)
+)
 
 
 ALL_COUNTRY_CODES = COUNTRY_CODES + COUNTRY_CODES_EXTENDED
@@ -99,5 +117,22 @@ INTANGIBLE_AGGREGATE_CATEGORIES_TYPE = Literal[
 
 CAPITAL_ACCOUNT_INDUSTRY_CODE = "MARKT"
 NATIONAL_ACCOUNT_INDUSTRY_CODE = "TOT"
+
+LABOUR_COMPOSITION_COLUMNS = [
+    "intangible",
+    "labour_composition",
+    "tangible_ICT",
+    "tangible_nonICT"
+]
+MPF_COLUMN = "mfp"
+LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]
+
+LABOUR_COMPOSITION_COLOR_MAP = {
+    "intangible": "royalblue",
+    "labour_composition": "gray",
+    "tangible_ICT": "lightsteelblue",
+    "tangible_nonICT": "darkgray",
+    "mfp": "lavender",
+}
 
 __all__ = ["BLD", "SRC", "TEST_DIR"]

@@ -3,11 +3,10 @@
 import pandas as pd
 
 from measuring_intangible_capital.config import (
-    CAPITAL_ACCOUNT_INDUSTRY_CODE,
     INTANGIBLE_AGGREGATE_CATEGORIES,
     INTANGIBLE_AGGREGATE_CATEGORIES_TYPE,
     INTANGIBLE_DETAIL_CATEGORIES,
-    NATIONAL_ACCOUNT_INDUSTRY_CODE,
+    LABOUR_COMPOSITION_COLUMNS,
 )
 
 
@@ -43,8 +42,6 @@ def _aggregate_intangible_investment(
             computerized_information: this includes the columns software_and_databases and research_and_development
             innovative_property: this includes the columns entertainment_and_artistic, new_financial_product, design
             economic_competencies: this includes the columns organizational_capital, brand, training
-        industry_code (str): The industry code for which to aggregate the data. Default "MARKT".
-
     Returns:
         pd.Series: The aggregate category of intangible investment for a given year.
 
@@ -88,8 +85,7 @@ def get_share_of_intangible_investment_per_gdp(
 
 def get_composition_of_value_added(
         growth_accounts: pd.DataFrame,
-        country_code: str,
-        industry_code: str = CAPITAL_ACCOUNT_INDUSTRY_CODE,
+        country_code: str
 ):
     """Calculate the composition of value added for a given country and industry code.
     
@@ -101,23 +97,15 @@ def get_composition_of_value_added(
     Returns:
         pd.DataFrame: The composition of value added.
     """
-    df = pd.DataFrame()
+    df = pd.DataFrame(index=[country_code])
+   
+    for column in LABOUR_COMPOSITION_COLUMNS:
+        df[column] = growth_accounts[column].mean()
 
-    columns = [
-        "intangible",
-        "labour_composition",
-        "tangible_ICT",
-        "tangible_nonICT"
-    ]
-
-    growth_account_industry = growth_accounts.loc[industry_code, :, :]
+   
+    df["labour_productivity"] = growth_accounts["labour_productivity"].mean()
+    df["mfp"] = df["labour_productivity"] - df[LABOUR_COMPOSITION_COLUMNS].mean().sum()
     df["country_code"] = [country_code]
-    
-    for column in columns:
-        df[column] = growth_account_industry[column].mean()
-    
-    df["labour_productivity"] = growth_account_industry["labour_productivity"].mean()
-    df["mfp"] = df["labour_productivity"] - df[columns].mean().sum()
     
     return df
 

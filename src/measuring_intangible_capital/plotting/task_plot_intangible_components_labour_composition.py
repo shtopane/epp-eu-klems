@@ -5,7 +5,7 @@ import pandas as pd
 from pytask import Product
 
 from measuring_intangible_capital.config import BLD, BLD_PYTHON
-from measuring_intangible_capital.final.plot import (
+from measuring_intangible_capital.plotting.plot import (
     plot_sub_components_intangible_labour_productivity,
 )
 

@@ -5,7 +5,7 @@ import pandas as pd
 from pytask import Product
 from measuring_intangible_capital.analysis.intangible_investment import get_composition_of_value_added
 
-from measuring_intangible_capital.config import ALL_COUNTRY_CODES_LESS_SK, BLD_PYTHON
+from measuring_intangible_capital.config import ALL_COUNTRY_CODES_LESS_SK, BLD_PYTHON, CAPITAL_ACCOUNT_INDUSTRY_CODE
 from measuring_intangible_capital.utilities import get_account_data_path_for_countries
 
 
@@ -30,7 +30,7 @@ def task_labour_productivity_composition(
 
     for index, country_code in enumerate(ALL_COUNTRY_CODES_LESS_SK):
         growth_accounts: pd.DataFrame = pd.read_pickle(depends_on["growth_accounts"][index])
-        growth_accounts_for_years = growth_accounts.loc[:, list(years), :]
+        growth_accounts_for_years = growth_accounts.loc[(CAPITAL_ACCOUNT_INDUSTRY_CODE, list(years), slice(None)), :]
         
         df = get_composition_of_value_added(growth_accounts_for_years, country_code)
         dfs.append(df)

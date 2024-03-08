@@ -5,7 +5,7 @@ import pandas as pd
 from pytask import Product
 
 from measuring_intangible_capital.config import BLD, BLD_PYTHON, DATA_CLEAN_PATH, SRC
-from measuring_intangible_capital.final.plot import plot_intangible_investment_gdp_per_capita
+from measuring_intangible_capital.plotting.plot import plot_intangible_investment_gdp_per_capita
 
 
 plot_intangible_investment_gdp_per_capita_deps = {

@@ -3,12 +3,134 @@
 import pandas as pd
 
 from measuring_intangible_capital.config import (
+    ALL_COUNTRY_CODES,
     INTANGIBLE_AGGREGATE_CATEGORIES,
     INTANGIBLE_AGGREGATE_CATEGORIES_TYPE,
     INTANGIBLE_DETAIL_CATEGORIES,
+    INTANGIBLE_DETAIL_CATEGORIES_TYPE,
     LABOUR_COMPOSITION_COLUMNS,
 )
 
+def get_share_of_intangible_investment_per_gdp(
+    capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
+) -> pd.DataFrame:
+    """Calculate investment levels and shares of intangible investment for a country.
+    Investment levels are calculated as the sum of intangible assets for all industries.
+
+    Args:
+        capital_accounts (pd.DataFrame): data set with investment levels for all industries
+        national_accounts (pd.DataFrame): data set with GDP for all industries
+
+    Returns:
+        pd.DataFrame: investment levels and shares of intangible investment.
+    """
+    _raise_data_none(capital_accounts, "capital_accounts")
+    _raise_data_none(national_accounts, "national_accounts")
+    _raise_data_invalid(capital_accounts, "capital_accounts")
+    _raise_data_invalid(national_accounts, "national_accounts")
+    _raise_data_wrong_columns(capital_accounts, INTANGIBLE_DETAIL_CATEGORIES, "capital_accounts")
+    _raise_data_wrong_columns(national_accounts, ["gdp"], "national_accounts")
+
+    df = pd.DataFrame()
+
+    df["investment_level"] = capital_accounts[INTANGIBLE_DETAIL_CATEGORIES].sum(axis=1)
+    df["share_intangible"] = _calculate_investment_share_in_gdp(
+        df["investment_level"], national_accounts["gdp"]
+    )
+
+    return df
+
+def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: str):
+    """Calculate the composition of value added for a given country and industry code.
+
+    Args:
+        growth_accounts (pd.DataFrame): The growth accounts data set for a given country.
+        country_code (str): The country code for which to calculate the composition of value added.
+
+    Returns:
+        pd.DataFrame: The composition of value added.
+    """
+    _raise_country_code_none(country_code)
+    _raise_country_code_invalid(country_code)
+    _raise_data_none(growth_accounts, "growth_accounts")
+    _raise_data_invalid(growth_accounts, "growth_accounts")
+    _raise_data_wrong_columns(growth_accounts, LABOUR_COMPOSITION_COLUMNS, "growth_accounts")
+    
+    df = pd.DataFrame(index=[country_code])
+
+    for column in LABOUR_COMPOSITION_COLUMNS:
+        df[column] = growth_accounts[column].mean()
+
+    df["labour_productivity"] = growth_accounts["labour_productivity"].mean()
+    df["mfp"] = df["labour_productivity"] - df[LABOUR_COMPOSITION_COLUMNS].mean().sum()
+    df["country_code"] = [country_code]
+
+    return df
+
+def get_intangible_investment_aggregate_types(
+    capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame, country_code: str
+) -> pd.DataFrame:
+    """Calculate the share of intangible investment for each aggregate category for a given year.
+    For each category, calculate the share of intangible investment of GDP.
+    Categories are: computerized_information, innovative_property, economic_competencies
+
+    Args:
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
+        national_accounts (pd.DataFrame): The national accounts with GDP of a given country.
+
+    Returns:
+        pd.DataFrame: The share of intangible investment for each aggregate category.
+    """
+    _raise_if_index_not_equal(capital_accounts, national_accounts)
+
+    df = pd.DataFrame(
+        index=capital_accounts.index, columns=INTANGIBLE_AGGREGATE_CATEGORIES
+    )
+
+    gdp = national_accounts.xs(country_code, level="country_code")["gdp"]
+    investment = capital_accounts.xs(country_code, level="country_code")
+
+    for category in INTANGIBLE_AGGREGATE_CATEGORIES:
+        aggregate_intangible_investment = _aggregate_intangible_investment(
+            sr=investment, mode=category
+        )
+
+        investment_share = _calculate_investment_share_in_gdp(
+            aggregate_intangible_investment,
+            gdp,
+        )
+        investment_share.index = df.index
+
+        df[category] = investment_share
+
+    return df
+
+def get_share_of_tangible_investment_per_gdp(
+    capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame, country_code: str
+):
+    """Calculate the share of tangible investment of GDP for a given year.
+
+    Args:
+        capital_accounts (pd.DataFrame): The capital accounts data set for a given industry, year and country.
+        national_accounts (pd.DataFrame): The national accounts with GDP of a given industry, year and country.
+
+    Returns:
+        pd.Series: The share of tangible investment as percent of GDP.
+    """
+    _raise_if_index_not_equal(capital_accounts, national_accounts)
+
+    df = pd.DataFrame(index=capital_accounts.index)
+
+    tangible_assets = capital_accounts.xs(country_code, level="country_code")[
+        "tangible_assets"
+    ]
+    gdp = national_accounts.xs(country_code, level="country_code")["gdp"]
+
+    share_tangible = _calculate_investment_share_in_gdp(tangible_assets, gdp)
+    share_tangible.index = df.index
+    df["share_tangible"] = share_tangible
+
+    return df
 
 def _calculate_investment_share_in_gdp(
     intangible_investment: pd.Series, gdp: pd.Series
@@ -36,8 +158,7 @@ def _aggregate_intangible_investment(
     Ex: computerized_information - software_and_databases, research_and_development
 
     Args:
-        df (pd.DataFrame): The intangible investment data set.
-        year (int): The year for which to aggregate the data.
+        sr (pd.Series): The total market intangible investment data set for a given year.
         mode (INTANGIBLE_AGGREGATE_CATEGORIES_TYPE): The aggregate category for which to aggregate the data.
             computerized_information: this includes the columns software_and_databases and research_and_development
             innovative_property: this includes the columns entertainment_and_artistic, new_financial_product, design
@@ -46,8 +167,10 @@ def _aggregate_intangible_investment(
         pd.Series: The aggregate category of intangible investment for a given year.
 
     """
-    # TODO: Add Literal type for index
-    index = None
+    _raise_aggregate_mode_not_passed(mode)
+    _raise_aggregate_mode_invalid(mode)
+
+    index: INTANGIBLE_DETAIL_CATEGORIES_TYPE = None
 
     if mode == "computerized_information":
         index = ["software_and_databases", "research_and_development"]
@@ -55,125 +178,40 @@ def _aggregate_intangible_investment(
         index = ["entertainment_and_artistic", "new_financial_product", "design"]
     elif mode == "economic_competencies":
         index = ["organizational_capital", "brand", "training"]
-    else:
-        raise ValueError("Invalid mode")
 
     return sr[index].sum(axis=1)
 
-def get_share_of_intangible_investment_per_gdp(
+def _raise_if_index_not_equal(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
-) -> pd.DataFrame:
-    """Calculate investment levels and shares of intangible investment for a country.
-    Investment levels are calculated as the sum of intangible assets for all industries.
-
-    Args:
-        capital_accounts (pd.DataFrame): data set with investment levels for all industries
-        national_accounts (pd.DataFrame): data set with GDP for all industries
-
-    Returns:
-        pd.DataFrame: investment levels and shares of intangible investment.
-    """
-
-    df = pd.DataFrame()
-    
-    df["investment_level"] = capital_accounts[INTANGIBLE_DETAIL_CATEGORIES].sum(axis=1)
-    df["share_intangible"] = _calculate_investment_share_in_gdp(
-        df["investment_level"], national_accounts["gdp"]
-    )
-
-    return df
-
-def get_composition_of_value_added(
-        growth_accounts: pd.DataFrame,
-        country_code: str
 ):
-    """Calculate the composition of value added for a given country and industry code.
-    
-    Args:
-        growth_accounts (pd.DataFrame): The growth accounts data set for a given country.
-        country_code (str): The country code for which to calculate the composition of value added.
-        industry_code (str): The industry code for which to calculate the composition of value added. Default "MARKT".
-    
-    Returns:
-        pd.DataFrame: The composition of value added.
-    """
-    df = pd.DataFrame(index=[country_code])
-   
-    for column in LABOUR_COMPOSITION_COLUMNS:
-        df[column] = growth_accounts[column].mean()
+    if not capital_accounts.index.equals(national_accounts.index):
+        raise ValueError("Index is not the same")
 
-   
-    df["labour_productivity"] = growth_accounts["labour_productivity"].mean()
-    df["mfp"] = df["labour_productivity"] - df[LABOUR_COMPOSITION_COLUMNS].mean().sum()
-    df["country_code"] = [country_code]
-    
-    return df
+def _raise_aggregate_mode_invalid(mode):
+    if mode not in INTANGIBLE_AGGREGATE_CATEGORIES:
+        raise ValueError("Invalid mode")
 
-def get_intangible_investment_aggregate_types(
-    capital_accounts: pd.DataFrame,
-    national_accounts: pd.DataFrame,
-    country_code: str
-) -> pd.DataFrame:
-    """Calculate the share of intangible investment for each aggregate category for a given year.
-    For each category, calculate the share of intangible investment of GDP.
-    Categories are: computerized_information, innovative_property, economic_competencies
+def _raise_aggregate_mode_not_passed(mode):
+    if mode is None:
+        raise ValueError("Mode is None")
 
-    Args:
-        capital_accounts (pd.DataFrame): The capital accounts data set for a given country.
-        national_accounts (pd.DataFrame): The national accounts with GDP of a given country.
+def _raise_data_wrong_columns(data, columns: list[str], name: str):
+    if not all(column in data.columns for column in columns):
+        raise ValueError(f"{name} has the wrong columns")
 
-    Returns:
-        pd.DataFrame: The share of intangible investment for each aggregate category.
-    """
-    # TODO: Check if the index is the same(capital_accounts, national_accounts)
+def _raise_data_invalid(data, name):
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError(f"{name} is not a pandas DataFrame")
 
-    df = pd.DataFrame(index=capital_accounts.index, columns=INTANGIBLE_AGGREGATE_CATEGORIES)
-    
-    gdp = national_accounts.xs(country_code, level='country_code')["gdp"]
-    investment = capital_accounts.xs(country_code, level='country_code')
+def _raise_data_none(data, name: str):
+    if data is None:
+        raise ValueError(f"{name} is None")
 
-    for category in INTANGIBLE_AGGREGATE_CATEGORIES:
-        aggregate_intangible_investment = _aggregate_intangible_investment(
-                sr=investment, mode=category
-            )
-        
-        result =  _calculate_investment_share_in_gdp(
-            aggregate_intangible_investment,
-            gdp,
-        )
-        # TODO: Ensure index is the same
-        result.index = df.index
-        df[category] = result
-        
+def _raise_country_code_invalid(country_code):
+    if country_code not in ALL_COUNTRY_CODES:
+        raise ValueError(f"Country code {country_code} is not valid")
 
-    return df
+def _raise_country_code_none(country_code):
+    if country_code is None:
+        raise ValueError("Country code is None")
 
-
-def get_share_of_tangible_investment_per_gdp(
-    capital_accounts: pd.DataFrame,
-    national_accounts: pd.DataFrame,
-    country_code: str
-):
-    """Calculate the share of tangible investment of GDP for a given year.
-
-    Args:
-        capital_accounts (pd.DataFrame): The capital accounts data set for a given industry, year and country.
-        national_accounts (pd.DataFrame): The national accounts with GDP of a given industry, year and country.
-
-    Returns:
-        pd.Series: The share of tangible investment as percent of GDP.
-    """
-    # TODO: Check if the index is the same(capital_accounts, national_accounts)
-    
-    df = pd.DataFrame(index=capital_accounts.index)
-
-    tangible_assets = capital_accounts.xs(country_code, level='country_code')["tangible_assets"]
-    gdp = national_accounts.xs(country_code, level='country_code')["gdp"]
-   
-    share_tangible = _calculate_investment_share_in_gdp(tangible_assets, gdp)
-    # TODO: Ensure the index is the same
-    share_tangible.index = df.index
-    
-
-    df["share_tangible"] = share_tangible
-    return df

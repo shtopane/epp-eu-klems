@@ -20,8 +20,7 @@ share_tangible_of_gdp_deps = {
     "capital_accounts": get_account_data_path_for_countries("capital"),
     "national_accounts": get_account_data_path_for_countries("national")
 }
-# 2006
-# range(2000, 2005)
+
 share_tangible_of_gdp_year_ranges = [[2006], range(2000, 2005)]
 
 for years in share_tangible_of_gdp_year_ranges:
@@ -29,7 +28,7 @@ for years in share_tangible_of_gdp_year_ranges:
 
     @task(id=share_tangible_name)
     def task_share_tangible_of_gdp(
-        years = years,
+        years=years,
         depends_on=share_tangible_of_gdp_deps,
         path_to_shares_tangible: Annotated[Path, Product]= BLD_PYTHON / "share_tangible" / f"gdp_aggregate_{share_tangible_name}.pkl"
     ):

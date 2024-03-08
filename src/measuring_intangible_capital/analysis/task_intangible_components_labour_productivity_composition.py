@@ -18,9 +18,8 @@ from measuring_intangible_capital.utilities import (
 
 intangible_components_labour_productivity_composition_deps = {
     "scripts": [Path("labour_productivity.py")],
-    "data": Path(BLD_PYTHON / "labour_productivity" / "composition.pkl"),
+    "data": Path(BLD_PYTHON / "labour_productivity" / "composition_1995_2006.pkl"),
 }
-
 
 def task_intangible_components_labour_productivity_composition(
     depends_on=intangible_components_labour_productivity_composition_deps,

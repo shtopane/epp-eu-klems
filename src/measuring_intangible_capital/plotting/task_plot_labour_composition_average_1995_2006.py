@@ -10,7 +10,7 @@ from measuring_intangible_capital.plotting.plot import plot_composition_of_labou
 
 plot_share_intangible_of_gdp_deps = {
     "scripts": [Path("plot.py"), Path(SRC / "analysis" / "intangible_investment.py")],
-    "data": BLD_PYTHON / "labour_productivity" / "composition.pkl",
+    "data": BLD_PYTHON / "labour_productivity" / "composition_1995_2006.pkl",
 }
 
 def task_plot_labour_composition_average_1995_2006(

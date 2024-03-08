@@ -1,19 +1,20 @@
 from pathlib import Path
+from typing import Annotated
 import pandas as pd
+from pytask import Product
 
 from measuring_intangible_capital.analysis.labour_productivity import (
     get_share_of_intangible_sub_components_in_labour_productivity,
 )
 
 from measuring_intangible_capital.config import (
+    ALL_COUNTRY_CODES_LESS_SK,
     BLD_PYTHON,
-    COUNTRY_CODES_LESS_SK,
     INTANGIBLE_AGGREGATE_CATEGORIES,
 )
 from measuring_intangible_capital.utilities import (
     get_percent_of_intangible_sub_components_in_labour_productivity,
 )
-
 
 intangible_components_labour_productivity_composition_deps = {
     "scripts": [Path("labour_productivity.py")],
@@ -23,7 +24,7 @@ intangible_components_labour_productivity_composition_deps = {
 
 def task_intangible_components_labour_productivity_composition(
     depends_on=intangible_components_labour_productivity_composition_deps,
-    path_to_data: Path = BLD_PYTHON / "labour_productivity" / "intangible_composition.pkl",
+    path_to_data: Annotated[Path, Product] = BLD_PYTHON / "labour_productivity" / "intangible_composition.pkl",
 ):
     labour_productivity_composition = pd.read_pickle(depends_on["data"])
 
@@ -32,7 +33,7 @@ def task_intangible_components_labour_productivity_composition(
         columns=INTANGIBLE_AGGREGATE_CATEGORIES,
     )
 
-    for country_code in COUNTRY_CODES_LESS_SK:
+    for country_code in ALL_COUNTRY_CODES_LESS_SK:
         labour_composition_for_country = labour_productivity_composition.loc[
             country_code
         ]

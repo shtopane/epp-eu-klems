@@ -7,7 +7,7 @@ import pandas as pd
 from pytask import Product, task
 
 from measuring_intangible_capital.config import (
-    COUNTRY_CODES,
+    ALL_COUNTRY_CODES,
     DATA_CLEAN_PATH,
     SRC,
 )
@@ -26,7 +26,7 @@ clean_data_deps = {
     "data_info": SRC / "data_management" / "eu_klems_data_info.yaml",
 }
 
-for country in COUNTRY_CODES:
+for country in ALL_COUNTRY_CODES:
     clean_data_deps[f"data_{country}"] = get_eu_klems_download_paths(country)
 
     @task(id=country)

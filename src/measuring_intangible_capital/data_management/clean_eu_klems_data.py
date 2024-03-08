@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from measuring_intangible_capital.config import BLD, COUNTRY_CODES, EU_KLEMS_DATA_DOWNLOAD_PATH, SRC
+from measuring_intangible_capital.config import BLD, EU_KLEMS_DATA_DOWNLOAD_PATH
 from measuring_intangible_capital.data_management.data_utilities import clean_data
 from measuring_intangible_capital.utilities import read_yaml
 
@@ -13,7 +13,7 @@ def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.Data
 
     Args:
         data_info (dict): yaml file with information on the data set.
-        country_code (str): AT, CZ, DK, EL, SK
+        country_code (str): AT, CZ, DK, EL, SK, UK, US
 
     Returns:
         tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames

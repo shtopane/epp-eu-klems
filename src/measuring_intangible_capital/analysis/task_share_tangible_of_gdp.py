@@ -3,6 +3,7 @@ from typing import Annotated
 import pandas as pd
 
 from pytask import Product, task
+from measuring_intangible_capital.analysis.utilities import prepare_accounts
 
 from measuring_intangible_capital.config import (
     ALL_COUNTRY_CODES,
@@ -10,9 +11,7 @@ from measuring_intangible_capital.config import (
     CAPITAL_ACCOUNT_INDUSTRY_CODE,
     NATIONAL_ACCOUNT_INDUSTRY_CODE,
 )
-from measuring_intangible_capital.analysis.intangible_investment import (
-    get_share_of_tangible_investment_per_gdp,
-)
+from measuring_intangible_capital.analysis.intangible_investment import get_share_of_tangible_investment_per_gdp
 from measuring_intangible_capital.utilities import get_account_data_path_for_countries
 
 share_tangible_of_gdp_deps = {
@@ -44,12 +43,16 @@ for years in share_tangible_of_gdp_year_ranges:
             # For Greece, the investment is under TOT industry code. There's no data on the industry level.
             capital_industry_code = NATIONAL_ACCOUNT_INDUSTRY_CODE if country_code == "EL" else CAPITAL_ACCOUNT_INDUSTRY_CODE
             
-            # TODO: Test this is a correct type (pd.DataFrame)
-            national_accounts_for_years = national_accounts.loc[NATIONAL_ACCOUNT_INDUSTRY_CODE, list(years), :]
-            national_accounts_for_years = national_accounts_for_years.reset_index(level="industry_code", drop=True)
-
-            capital_accounts_for_years = capital_accounts.loc[capital_industry_code, list(years), :]
-            capital_accounts_for_years = capital_accounts_for_years.reset_index(level="industry_code", drop=True)
+            capital_accounts_for_years = prepare_accounts(
+                accounts=capital_accounts,
+                years=years,
+                industry_code=capital_industry_code,
+            )
+            national_accounts_for_years = prepare_accounts(
+                accounts=national_accounts,
+                years=years,
+                industry_code=NATIONAL_ACCOUNT_INDUSTRY_CODE,
+            )
 
             df = get_share_of_tangible_investment_per_gdp(
                 capital_accounts=capital_accounts_for_years, 

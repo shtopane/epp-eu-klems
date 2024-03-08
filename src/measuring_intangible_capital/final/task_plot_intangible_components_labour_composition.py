@@ -22,5 +22,6 @@ def task_plot_intangible_components_labour_composition(
 ):
     """Figure 4b: Plot the share of intangible investment as percent of GDP for all years and countries."""
     df = pd.read_pickle(depends_on["data"])
+    
     fig = plot_sub_components_intangible_labour_productivity(df)
     fig.write_image(plot_save_path)

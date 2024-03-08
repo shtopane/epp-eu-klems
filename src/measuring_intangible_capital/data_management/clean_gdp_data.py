@@ -3,7 +3,7 @@
 from pathlib import Path
 import pandas as pd
 
-from measuring_intangible_capital.config import COUNTRY_CODES, COUNTRY_CODES_MAP
+from measuring_intangible_capital.config import ALL_COUNTRY_CODES, ALL_COUNTRY_CODES_MAP
 from measuring_intangible_capital.data_management.data_utilities import clean_data
 
 def read_data(path: Path, data_info: dict) -> pd.DataFrame:
@@ -16,7 +16,7 @@ def read_data(path: Path, data_info: dict) -> pd.DataFrame:
         pd.DataFrame: GDP per capita data
     """
     df = pd.read_excel(
-        path, sheet_name=data_info["sheets_to_read"], nrows=len(COUNTRY_CODES)
+        path, sheet_name=data_info["sheets_to_read"], nrows=len(ALL_COUNTRY_CODES)
     )
     return df
 
@@ -40,7 +40,7 @@ def _rename_country_codes(sr: pd.Series) -> pd.Series:
       pd.Index: The index with the country codes renamed.
     """
     # TODO: Check if this is the right column(entries should be the same length)
-    return sr.map(COUNTRY_CODES_MAP)
+    return sr.map(ALL_COUNTRY_CODES_MAP)
 
 def _make_years_separate_column(df: pd.DataFrame) -> pd.DataFrame:
     """Make the years a separate column by melting the data set.

@@ -6,11 +6,11 @@ import plotly.graph_objects as go
 import pandas as pd
 import math
 
-from measuring_intangible_capital.config import COUNTRY_COLOR_MAP, INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
-from measuring_intangible_capital.utilities import add_country_name
+from measuring_intangible_capital.config import INTANGIBLE_AGGREGATE_CATEGORIES, PLOT_COLORS_BY_COUNTRY
+from measuring_intangible_capital.utilities import ADD_COUNTRY_NAME_MODE, add_country_name_all_countries, add_country_name_extended_countries, add_country_name_main_countries
 
-def plot_share_intangibles_all_countries(df: pd.DataFrame):
-    """Create Figure 1: Share Intangible for All Countries (1995-2006)
+def plot_share_intangibles_for_countries(df: pd.DataFrame, country_codes: list, country_color_map: dict, mode: ADD_COUNTRY_NAME_MODE):
+    """Create Figure 1: Share Intangible for selected countries (1995-2006)
 
     Args:
         df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
@@ -18,16 +18,25 @@ def plot_share_intangibles_all_countries(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
+    df = df.loc[(slice(None), country_codes), :]
     df = df.reset_index()
+
+    if mode == "main":
+        df["country_name"] = add_country_name_main_countries(df)
+    elif mode == "extended":
+        df["country_name"] = add_country_name_extended_countries(df)
+    else:
+        df["country_name"] = add_country_name_all_countries(df)
+
 
     fig = px.line(
         df,
         x="year",
         y="share_intangible",
-        color="country_code",
-        line_group="country_code",
-        hover_name="country_code",
-        color_discrete_map=COUNTRY_COLOR_MAP,
+        color="country_name",
+        line_group="country_name",
+        hover_name="country_name",
+        color_discrete_map=country_color_map,
     )
 
     # Add markers to the line plot
@@ -80,8 +89,11 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
         Figure: the plotly figure
     """
     df = df.reset_index()
-    df["country_name"] = add_country_name(df)
-    df_melt = df.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='variable', value_name='value')
+    df = df.drop("year", axis=1)
+    df["country_name"] = add_country_name_all_countries(df)
+
+    df_melt = df.melt(id_vars=['country_name'], value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='variable', value_name='value')
+   
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', color_discrete_sequence=PLOT_COLORS_BY_COUNTRY[0:3])
 
     # Update the layout of the figure
@@ -107,8 +119,9 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
 
 def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: pd.DataFrame):
     df = pd.concat([intangible_df, tangible_df], axis=1)
+
     df = df.reset_index()
-    df["country_name"] = add_country_name(df)
+    df["country_name"] = add_country_name_all_countries(df)
 
     df_melt = df.melt(id_vars='country_name', value_vars=['share_intangible', 'share_tangible' ], var_name='variable', value_name='value')
     fig = px.bar(df_melt, x='country_name', y='value', color='variable', barmode='group', title='Bar Chart', color_discrete_sequence=['lavender', 'lightgray'])
@@ -133,9 +146,16 @@ def plot_share_tangible_to_intangible(intangible_df: pd.DataFrame, tangible_df: 
     return fig
 
 def plot_composition_of_labour_productivity(df: pd.DataFrame):
-    df = df.reset_index()
-    df["country_name"] = add_country_name(df)
+    """Figure 4a: Composition of labour productivity growth for all countries
 
+    Args:
+        df (pd.DataFrame): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    df = df.reset_index()
+    df["country_name"] = add_country_name_all_countries(df)
 
     columns = [col for col in df.columns if col not in ['country_code', 'country_name', 'labour_productivity']]
     color_map = {
@@ -171,6 +191,14 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
     return fig
 
 def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
+    """Figure 4b: Contribution of sub-components of intangibles to labour productivity growth for all countries
+
+    Args:
+        df (pd.DataFrame): _description_
+
+    Returns:
+        _type_: _description_
+    """
     # TODO: Not liking this... refactor or think how to make it better
     data_for_plotting = df.copy()
 
@@ -181,7 +209,7 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
         print("DataFrame has a custom index. Resetting index.")
         data_for_plotting.reset_index(inplace=True)
     
-    data_for_plotting["country_name"] = add_country_name(data_for_plotting)
+    data_for_plotting["country_name"] = add_country_name_all_countries(data_for_plotting)
     
     df_melted = data_for_plotting.melt(id_vars='country_name', value_vars=INTANGIBLE_AGGREGATE_CATEGORIES, var_name='component', value_name='value')
 
@@ -210,6 +238,7 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
 
 
 def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    """Figure 5a: Intangible investment and GDP per capita (2001-04)"""
     df_share_mean = intangible_investment_share.groupby('country_code')['share_intangible'].mean().reset_index()
     df_gdp_mean = gdp_per_capita.groupby('country_code')['gdp_per_capita'].mean().reset_index()
     df = pd.merge(df_share_mean, df_gdp_mean, on=["country_code"])
@@ -233,6 +262,7 @@ def plot_intangible_investment_gdp_per_capita(intangible_investment_share: pd.Da
     return fig
 
 def plot_investment_ratio_gdp_per_capita(intangible_investment: pd.DataFrame, tangible_investment: pd.DataFrame, gdp_per_capita: pd.DataFrame):
+    """Figure 5b: Intangible investment and GDP per capita (2001-04)"""
     by_country_intangible = intangible_investment.groupby("country_code")
     by_country_tangible = tangible_investment.groupby("country_code")
     

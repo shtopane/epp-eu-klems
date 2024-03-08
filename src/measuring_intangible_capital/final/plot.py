@@ -60,60 +60,7 @@ def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
     return fig
 
 
-def _plot_share_intangibles_for_countries(
-    df: pd.DataFrame,
-    country_color_map: dict,
-    mode: ADD_COUNTRY_NAME_MODE,
-):
-    """Create Figure 1: Share Intangible for selected countries (1995-2006)
-    Get data for all countries and plot the share of intangible investment for the selected countries.
-    Args:
-        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
 
-    Returns:
-        Figure: the plotly figure
-    """
-    df = df.reset_index()
-
-    if mode == "main":
-        df["country_name"] = add_country_name_main_countries(df)
-    elif mode == "extended":
-        df["country_name"] = add_country_name_extended_countries(df)
-    else:
-        df["country_name"] = add_country_name_all_countries(df)
-
-    fig = px.line(
-        df,
-        x="year",
-        y="share_intangible",
-        color="country_name",
-        line_group="country_name",
-        hover_name="country_name",
-        color_discrete_map=country_color_map,
-    )
-
-    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
-
-    years = df["year"].unique()
-    start_year = years[0]
-    end_year = years[-1]
-
-    max_share_intangible = df["share_intangible"].max()
-
-    fig.update_layout(
-        _default_fig_layout(
-            title=f"Share Intangible for ({start_year}-{end_year})",
-            yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
-            xaxis_settings=dict(
-                tickmode="array",  # Show every year
-                tickvals=years,  # Array of years from the DataFrame
-                showgrid=False,  # No grid for the x-axis
-                title="Year",
-            ),
-        ),
-    )
-
-    return fig
 
 
 def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
@@ -371,6 +318,60 @@ def plot_investment_ratio_gdp_per_capita(
 
     return fig
 
+def _plot_share_intangibles_for_countries(
+    df: pd.DataFrame,
+    country_color_map: dict,
+    mode: ADD_COUNTRY_NAME_MODE,
+):
+    """Create Figure 1: Share Intangible for selected countries (1995-2006)
+    Get data for all countries and plot the share of intangible investment for the selected countries.
+    Args:
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+
+    Returns:
+        Figure: the plotly figure
+    """
+    df = df.reset_index()
+
+    if mode == "main":
+        df["country_name"] = add_country_name_main_countries(df)
+    elif mode == "extended":
+        df["country_name"] = add_country_name_extended_countries(df)
+    else:
+        df["country_name"] = add_country_name_all_countries(df)
+
+    fig = px.line(
+        df,
+        x="year",
+        y="share_intangible",
+        color="country_name",
+        line_group="country_name",
+        hover_name="country_name",
+        color_discrete_map=country_color_map,
+    )
+
+    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
+
+    years = df["year"].unique()
+    start_year = years[0]
+    end_year = years[-1]
+
+    max_share_intangible = df["share_intangible"].max()
+
+    fig.update_layout(
+        _default_fig_layout(
+            title=f"Share Intangible for ({start_year}-{end_year})",
+            yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
+            xaxis_settings=dict(
+                tickmode="array",  # Show every year
+                tickvals=years,  # Array of years from the DataFrame
+                showgrid=False,  # No grid for the x-axis
+                title="Year",
+            ),
+        ),
+    )
+
+    return fig
 
 def _default_fig_layout(
     title: str,

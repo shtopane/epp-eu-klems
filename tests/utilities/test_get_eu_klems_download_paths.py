@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 import pytest
-from measuring_intangible_capital.config import COUNTRY_CODES, EU_KLEMS_FILE_NAMES
+from measuring_intangible_capital.config import ALL_COUNTRY_CODES_LESS_SK, COUNTRY_CODES, EU_KLEMS_FILE_NAMES
 
 from measuring_intangible_capital.utilities import get_eu_klems_download_paths
 
@@ -15,7 +15,8 @@ def test_country_code_not_in_country_codes(country_code):
     with pytest.raises(ValueError, match="is not valid."):
         get_eu_klems_download_paths(country_code)
 
-@pytest.mark.parametrize("country_code", COUNTRY_CODES)
+# TODO: Test that growth_accounts is not in the paths for SK
+@pytest.mark.parametrize("country_code", ALL_COUNTRY_CODES_LESS_SK)
 def test_return_type(country_code):
     result = get_eu_klems_download_paths(country_code)
     

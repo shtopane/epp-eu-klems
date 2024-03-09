@@ -82,14 +82,6 @@ ALL_COUNTRY_CODES_MAP = {**COUNTRY_CODES_MAP, **COUNTRY_CODES_MAP_EXTENDED}
 ALL_PLOT_COLORS_BY_COUNTRY = PLOT_COLORS_BY_COUNTRY + PLOT_COLORS_BY_COUNTRY_EXTENDED
 ALL_COUNTRY_CODES_LESS_SK = COUNTRY_CODES_LESS_SK + COUNTRY_CODES_EXTENDED
 
-# TODO: Set to all country mode
-# COUNTRY_CODES = ALL_COUNTRY_CODES
-# COUNTRIES = ALL_COUNTRIES
-# COUNTRY_CODES_LESS_SK = ALL_COUNTRY_CODES_LESS_SK
-# COUNTRY_CODES_MAP = ALL_COUNTRY_CODES_MAP
-# COUNTRY_COLOR_MAP = ALL_COUNTRY_COLOR_MAP
-# PLOT_COLORS_BY_COUNTRY = ALL_PLOT_COLORS_BY_COUNTRY
-
 """Columns on investment which make up intangible investment. 
 Each of this type is aggregated up to @see INTANGIBLE_AGGREGATE_CATEGORIES
 """
@@ -138,12 +130,6 @@ LABOUR_COMPOSITION_COLUMNS = [
 MPF_COLUMN = "mfp"
 LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]
 
-LABOUR_COMPOSITION_COLOR_MAP = {
-    "intangible": "royalblue",
-    "labour_composition": "gray",
-    "tangible_ICT": "lightsteelblue",
-    "tangible_nonICT": "darkgray",
-    "mfp": "lavender",
-}
+LABOUR_COMPOSITION_PLOT_COLORS = ["royalblue", "gray", "lightsteelblue", "darkgray", "lavender"]
 
 __all__ = ["BLD", "SRC", "TEST_DIR"]

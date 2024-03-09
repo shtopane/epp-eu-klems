@@ -10,7 +10,7 @@ from measuring_intangible_capital.config import (
     COUNTRY_COLOR_MAP,
     COUNTRY_COLOR_MAP_EXTENDED,
     INTANGIBLE_AGGREGATE_CATEGORIES,
-    LABOUR_COMPOSITION_COLOR_MAP,
+    LABOUR_COMPOSITION_PLOT_COLORS,
     LABOUR_COMPOSITION_COLUMNS_EXTENDED,
     PLOT_COLORS_AGGREGATE_CATEGORIES,
 )
@@ -157,15 +157,14 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
     df = df.reset_index()
     df["country_name"] = add_country_name_all_countries(df)
 
-    fig = go.Figure(
-        data=[
-            _get_bar_for_labour_composition(
-                df=df,
-                column_name=column,
-                marker_color=LABOUR_COMPOSITION_COLOR_MAP[column],
-            )
-            for column in LABOUR_COMPOSITION_COLUMNS_EXTENDED
-        ]
+    df_plotting = _data_labour_productivity_bar_chart(
+        df=df,
+        value_vars=LABOUR_COMPOSITION_COLUMNS_EXTENDED
+    )
+
+    fig = _labour_productivity_bar_chart(
+        df=df_plotting,
+        color_discrete_sequence=LABOUR_COMPOSITION_PLOT_COLORS
     )
 
     fig.update_layout(
@@ -173,10 +172,8 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
             title="Contribution of inputs to labour productivity growth, annual average (percent), 1995-2006",
             yaxis_settings={"dtick": 1},
         ),
-        barmode="stack",
     )
     return fig
-
 
 def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     """Create Figure 4b: Contribution of sub-components of intangibles to labour productivity growth, annual
@@ -192,26 +189,20 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     df = df.reset_index()
     df["country_name"] = add_country_name_all_countries(df)
 
-    df_melted = df.melt(
-        id_vars="country_name",
-        value_vars=INTANGIBLE_AGGREGATE_CATEGORIES,
-        var_name="component",
-        value_name="value",
+    df_plotting = _data_labour_productivity_bar_chart(
+        df=df,
+        value_vars=INTANGIBLE_AGGREGATE_CATEGORIES
     )
 
-    fig = px.bar(
-        df_melted,
-        x="country_name",
-        y="value",
-        color="component",
-        barmode="stack",
-        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES,
+    fig = _labour_productivity_bar_chart(
+        df=df_plotting,
+        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES
     )
-
+    
     fig.update_layout(
         _default_fig_layout(
             title="Contribution of sub-components of intangibles to labour productivity growth <br> annual average (percent), 1995-2006",
-            yaxis_settings={"dtick": 0.05, "range": [0, 0.5]},
+            yaxis_settings={"dtick": 0.2, "range": [-0.2, 1.0]},
         )
     )
     return fig
@@ -318,61 +309,6 @@ def plot_investment_ratio_gdp_per_capita(
 
     return fig
 
-def _plot_share_intangibles_for_countries(
-    df: pd.DataFrame,
-    country_color_map: dict,
-    mode: ADD_COUNTRY_NAME_MODE,
-):
-    """Create Figure 1: Share Intangible for selected countries (1995-2006)
-    Get data for all countries and plot the share of intangible investment for the selected countries.
-    Args:
-        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
-
-    Returns:
-        Figure: the plotly figure
-    """
-    df = df.reset_index()
-
-    if mode == "main":
-        df["country_name"] = add_country_name_main_countries(df)
-    elif mode == "extended":
-        df["country_name"] = add_country_name_extended_countries(df)
-    else:
-        df["country_name"] = add_country_name_all_countries(df)
-
-    fig = px.line(
-        df,
-        x="year",
-        y="share_intangible",
-        color="country_name",
-        line_group="country_name",
-        hover_name="country_name",
-        color_discrete_map=country_color_map,
-    )
-
-    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
-
-    years = df["year"].unique()
-    start_year = years[0]
-    end_year = years[-1]
-
-    max_share_intangible = df["share_intangible"].max()
-
-    fig.update_layout(
-        _default_fig_layout(
-            title=f"Share Intangible for ({start_year}-{end_year})",
-            yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
-            xaxis_settings=dict(
-                tickmode="array",  # Show every year
-                tickvals=years,  # Array of years from the DataFrame
-                showgrid=False,  # No grid for the x-axis
-                title="Year",
-            ),
-        ),
-    )
-
-    return fig
-
 def _default_fig_layout(
     title: str,
     show_legend: bool = True,
@@ -446,13 +382,97 @@ def _default_diamond_marker():
         "textposition": "top center",
     }
 
+def _data_labour_productivity_bar_chart(df: pd.DataFrame, value_vars: list[str]) -> pd.DataFrame:
+    """Prepare the data for the labour productivity bar chart.
+    Melts the data frame by country name and the value_vars.
+    assigns a name (component).
 
-def _get_bar_for_labour_composition(
-    df: pd.DataFrame, column_name: str, marker_color: str
-):
-    return go.Bar(
-        name=column_name,
-        x=df["country_name"],
-        y=df[column_name],
-        marker_color=marker_color,
+    Args:
+        df (pd.DataFrame): data set containing intangible, labour_composition, tangible_ICT, tangible_nonICT and mfp columns for all countries
+        value_vars (list[str]): the columns to melt
+
+    Returns:
+        pd.DataFrame: melted data set
+    """
+    df_melted = df.melt(
+        id_vars="country_name",
+        value_vars=value_vars,
+        var_name="component",
+        value_name="value",
     )
+    
+    return df_melted
+
+def _labour_productivity_bar_chart(df: pd.DataFrame, color_discrete_sequence: list[str]):
+    """Create a bar chart for the labour productivity composition.
+
+    Args:
+        df (pd.DataFrame): data set containing country_name, component, and value columns
+        color_discrete_sequence (list[str]): list of colors for the components
+
+    Returns:
+        Figure: the plotly figure
+    """
+    fig = px.bar(
+        df,
+        x="country_name",
+        y="value",
+        color="component",
+        color_discrete_sequence=color_discrete_sequence
+    )
+    return fig
+
+def _plot_share_intangibles_for_countries(
+    df: pd.DataFrame,
+    country_color_map: dict,
+    mode: ADD_COUNTRY_NAME_MODE,
+):
+    """Create Figure 1: Share Intangible for selected countries (1995-2006)
+    Get data for all countries and plot the share of intangible investment for the selected countries.
+    Args:
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+
+    Returns:
+        Figure: the plotly figure
+    """
+    df = df.reset_index()
+
+    if mode == "main":
+        df["country_name"] = add_country_name_main_countries(df)
+    elif mode == "extended":
+        df["country_name"] = add_country_name_extended_countries(df)
+    else:
+        df["country_name"] = add_country_name_all_countries(df)
+
+    fig = px.line(
+        df,
+        x="year",
+        y="share_intangible",
+        color="country_name",
+        line_group="country_name",
+        hover_name="country_name",
+        color_discrete_map=country_color_map,
+    )
+
+    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
+
+    years = df["year"].unique()
+    start_year = years[0]
+    end_year = years[-1]
+
+    max_share_intangible = df["share_intangible"].max()
+
+    fig.update_layout(
+        _default_fig_layout(
+            title=f"Share Intangible for ({start_year}-{end_year})",
+            yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
+            xaxis_settings=dict(
+                tickmode="array",  # Show every year
+                tickvals=years,  # Array of years from the DataFrame
+                showgrid=False,  # No grid for the x-axis
+                title="Year",
+            ),
+        ),
+    )
+
+    return fig

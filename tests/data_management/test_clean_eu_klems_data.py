@@ -6,14 +6,15 @@ import pytest
 from measuring_intangible_capital.config import TEST_DIR
 from measuring_intangible_capital.data_management import clean_eu_klems_data
 from measuring_intangible_capital.utilities import read_yaml
-from tests.data_management.mock import mock_eu_klems_data
+from tests.data_management.mock import EU_KLEMS_FIXTURE_PATH, MOCK_YEARS_RANGE, mock_eu_klems_data, save_mock_eu_klems_data
 
-EU_KLEMS_FIXTURE_PATH = TEST_DIR / "data_management" / "eu_klems_data_fixture.xlsx"
+
 
 @pytest.fixture(scope="module", autouse=True)
 def create_mock_data(request):
     print("Creating mock data")
-    mock_eu_klems_data()
+    capital_accounts, national_accounts, growth_accounts = mock_eu_klems_data()
+    save_mock_eu_klems_data(capital_accounts, national_accounts, growth_accounts)
 
     def remove_mock_data():
         print("Removing mock data")
@@ -23,7 +24,7 @@ def create_mock_data(request):
 
 @pytest.fixture()
 def years_range():
-    return range(1995, 1998)
+    return MOCK_YEARS_RANGE
 
 @pytest.fixture()
 def capital_accounts(data_info):
@@ -65,6 +66,7 @@ def test_read_data_return_type(data_info):
         path_to_capital_accounts=EU_KLEMS_FIXTURE_PATH, 
         path_to_national_accounts=EU_KLEMS_FIXTURE_PATH
     )
+
     assert type(accounts1) == list
     assert type(accounts2) == list
 
@@ -104,10 +106,6 @@ def test_read_data_national_path_not_valid(data_info):
             path_to_capital_accounts=EU_KLEMS_FIXTURE_PATH,
             path_to_national_accounts="banana"
         )
-# def test_clean_data_drop_columns(data, data_info):
-#     data_clean = clean_eu_klems_data(data, data_info)
-#     assert not set(data_info["columns_to_drop"]).intersection(set(data_clean.columns))
-
 
 def test_read_growth_accounts_return_type(data_info):
     growth_accounts = clean_eu_klems_data.read_growth_accounts(

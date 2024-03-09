@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from measuring_intangible_capital.data_management.utilities import clean_data
-from measuring_intangible_capital.error_handling_utilities import _raise_if_variable_none
+from measuring_intangible_capital.error_handling_utilities import _raise_data_info_invalid, _raise_if_variable_none
 
 def read_data(data_info: dict, path_to_capital_accounts: Path, path_to_national_accounts: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read investment and national accounts data from the EU KLEMS data set.
@@ -217,7 +217,3 @@ def _raise_keys_not_valid(data_info, sheet_names: list[str]):
     for sheet_name in sheet_names:
         if sheet_name not in data_info["sheets_to_read"]:
             raise KeyError(f"The data_info dictionary must contain one of {sheet_names}.")
-
-def _raise_data_info_invalid(data_info):
-    if not isinstance(data_info, dict):
-        raise TypeError("The data_info argument must be a dictionary.")

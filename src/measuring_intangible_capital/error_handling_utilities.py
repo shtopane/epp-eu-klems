@@ -7,3 +7,7 @@ def _raise_if_variable_none(variable, variable_name: str) -> None:
     """
     if variable is None:
         raise ValueError(f"The {variable_name} argument must not be None.")
+    
+def _raise_data_info_invalid(data_info):
+    if not isinstance(data_info, dict):
+        raise TypeError("The data_info argument must be a dictionary.")

@@ -1,3 +1,4 @@
+"""Functions to mock data sets for testing purposes."""
 import pandas as pd
 
 from measuring_intangible_capital.config import TEST_DIR
@@ -5,27 +6,27 @@ from measuring_intangible_capital.config import TEST_DIR
 
 def mock_eu_klems_data():
     """Mock the EU KLEMS data set.
-    3 columns are must haves: industry_code, year, country_code.
-    Then, others can be added.
+    The data set is a multi-sheet Excel where each variable of interest(say intangible investment) is in a separate sheet.
+    In each sheet the variables are: nace_r2_code, geo_code, geo_name, nace_r2_name and then for each year the var values.
     """
     capital_accounts = pd.DataFrame(
         {
             **_get_base_data(),
-            "var": ["Sheet1", "Sheet1", "Sheet1"],
+            "var": ["Capital_Variable", "Capital_Variable", "Capital_Variable"],
         }
     )
 
     national_accounts = pd.DataFrame(
         {
             **_get_base_data(),
-            "var": ["Sheet2", "Sheet2", "Sheet2"],
+            "var": ["National_Variable", "National_Variable", "National_Variable"],
         }
     )
 
     growth_accounts = pd.DataFrame(
         {
             **_get_base_data(),
-            "var": ["Sheet3", "Sheet3", "Sheet3"],
+            "var": ["Growth_Variable", "Growth_Variable", "Growth_Variable"],
         }
     )
 
@@ -33,9 +34,9 @@ def mock_eu_klems_data():
     with pd.ExcelWriter(
         TEST_DIR / "data_management" / "eu_klems_data_fixture.xlsx", engine="xlsxwriter"
     ) as writer:
-        capital_accounts.to_excel(writer, sheet_name="Sheet1", index=False)
-        national_accounts.to_excel(writer, sheet_name="Sheet2", index=False)
-        growth_accounts.to_excel(writer, sheet_name="Sheet3", index=False)
+        capital_accounts.to_excel(writer, sheet_name="Capital_Variable", index=False)
+        national_accounts.to_excel(writer, sheet_name="National_Variable", index=False)
+        growth_accounts.to_excel(writer, sheet_name="Growth_Variable", index=False)
 
 
 def _get_base_data():
@@ -46,5 +47,7 @@ def _get_base_data():
         "1996": [4, 5, 6],
         "1997": [7, 8, 9],
         "geo_code": ["AT", "AT", "AT"],
+        "geo_name": ["Austria", "Austria", "Austria"],
+        "nace_r2_name": ["Agriculture", "Mining", "Manufacturing"]
     }
     return base_data

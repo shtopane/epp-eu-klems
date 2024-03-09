@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from measuring_intangible_capital.data_management.utilities import clean_data
+from measuring_intangible_capital.error_handling_utilities import _raise_if_variable_none
 
 def read_data(data_info: dict, path_to_capital_accounts: Path, path_to_national_accounts: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read investment and national accounts data from the EU KLEMS data set.
@@ -70,6 +71,11 @@ def clean_and_reshape_eu_klems(
         pd.DataFrame: The cleaned and reshaped data set.
 
     """
+    _raise_if_variable_none(raw, "raw")
+    _raise_if_raw_not_list(raw)
+    _raise_if_raw_empty(raw)
+    _raise_data_info_invalid(data_info)
+    
     data = []
 
     for df in raw:
@@ -85,11 +91,19 @@ def clean_and_reshape_eu_klems(
     
     return df
 
+def _raise_if_raw_empty(raw):
+    if len(raw) == 0:
+        raise ValueError("The raw argument must not be an empty list.")
+
+def _raise_if_raw_not_list(raw):
+    if not isinstance(raw, list):
+        raise TypeError("The raw argument must be a list of pandas.DataFrame objects.")
+
 def _pivot_investment_level_to_concrete_investment_categories(df: pd.DataFrame) -> pd.DataFrame:
     """Pivot the investment_level column to investment categories as columns.
     Investment categories are the variable_name column.
     Values for the investment categories are the investment_level column.
-    Finally, round all values to 3 decimal places.
+    Finally, round all values to 3 decimal places and removes the name of the columns.
 
     The investment categories can be seen in the data_info.yaml file.
     Args:
@@ -104,6 +118,7 @@ def _pivot_investment_level_to_concrete_investment_categories(df: pd.DataFrame) 
         observed=True
     )
     df.round(3)
+    df.columns.name = None
 
     return df
 

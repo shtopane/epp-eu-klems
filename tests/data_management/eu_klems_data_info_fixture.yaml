@@ -1,0 +1,16 @@
+sheets_to_read:
+  intangible_analytical_detailed: [Sheet1]
+  national_accounts: [Sheet2]
+  growth_accounts: [Sheet3]
+categorical_columns: ['var', 'nace_r2_code', 'geo_code']
+columns_to_drop:
+ - geo_name
+ - nace_r2_name
+variable_name_mapping:
+  Sheet1: sheet1
+  Sheet2: sheet2
+column_rename_mapping:
+  var: variable_name
+  nace_r2_code: industry_code
+  geo_code: country_code
+

@@ -1,11 +1,11 @@
 """Function(s) for cleaning the EU KLEMS data set(s)."""
 
+from pathlib import Path
 import pandas as pd
 
-from measuring_intangible_capital.config import BLD, EU_KLEMS_DATA_DOWNLOAD_PATH
 from measuring_intangible_capital.data_management.utilities import clean_data
 
-def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.DataFrame]:
+def read_data(data_info: dict, path_to_capital_accounts: Path, path_to_national_accounts: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read investment and national accounts data from the EU KLEMS data set.
     The data is read for a specific country and the sheets specified in the data_info object.
 
@@ -16,26 +16,25 @@ def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.Data
     Returns:
         tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames
     """
+    _raise_data_info_invalid(data_info)
+    _raise_keys_not_valid(data_info, ["intangible_analytical_detailed", "national_accounts"])
+    _raise_path_invalid(path_to_capital_accounts, "path_to_capital_accounts")
+    _raise_path_invalid(path_to_national_accounts, "path_to_national_accounts")
+
     national_accounts_dfs = []
     capital_accounts_dfs = []
-
+    # BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "intangible_analytical.xlsx"
     for sheet in data_info["sheets_to_read"]["intangible_analytical_detailed"]:
-        path_to_file = (
-            BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "intangible_analytical.xlsx"
-        )
-        data_sheet = pd.read_excel(path_to_file, sheet_name=sheet)
+        data_sheet = pd.read_excel(path_to_capital_accounts, sheet_name=sheet)
         capital_accounts_dfs.append(data_sheet)
 
     for sheet in data_info["sheets_to_read"]["national_accounts"]:
-        path_to_file = (
-            BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "national_accounts.xlsx"
-        )
-        data_sheet = pd.read_excel(path_to_file, sheet_name=sheet)
+        data_sheet = pd.read_excel(path_to_national_accounts, sheet_name=sheet)
         national_accounts_dfs.append(data_sheet)
     
     return capital_accounts_dfs, national_accounts_dfs
 
-def read_growth_accounts(data_info: dict, country_code: str) -> list[pd.DataFrame]:
+def read_growth_accounts(data_info: dict, path_to_growth_accounts: Path) -> list[pd.DataFrame]:
     """Read growth accounts data from the EU KLEMS data set.
     The data is read for a specific country and the sheets specified in the data_info object.
 
@@ -46,13 +45,14 @@ def read_growth_accounts(data_info: dict, country_code: str) -> list[pd.DataFram
     Returns:
         tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames
     """
+    _raise_data_info_invalid(data_info)
+    _raise_keys_not_valid(data_info, ["growth_accounts"])
+    _raise_path_invalid(path_to_growth_accounts, "path_to_growth_accounts")
+
     growth_accounts_dfs = []
 
     for sheet in data_info["sheets_to_read"]["growth_accounts"]:
-        path_to_file = (
-            BLD / EU_KLEMS_DATA_DOWNLOAD_PATH / country_code / "growth_accounts.xlsx"
-        )
-        data_sheet = pd.read_excel(path_to_file, sheet_name=sheet)
+        data_sheet = pd.read_excel(path_to_growth_accounts, sheet_name=sheet)
         growth_accounts_dfs.append(data_sheet)
 
     return growth_accounts_dfs
@@ -125,7 +125,6 @@ def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
 
     return concatenated
 
-
 def _transform_years_columns(
     df: pd.DataFrame, years: range, var_name="year", value_name="investment_level"
 ) -> pd.DataFrame:
@@ -191,3 +190,19 @@ def _rename_variable_category(sr: pd.Series, category_names: dict) -> pd.Series:
         pd.Series: renamed series
     """
     return sr.cat.rename_categories(category_names)
+
+def _raise_path_invalid(path, name: str):
+    if not isinstance(path, Path):
+        raise TypeError(f"Argument {name} must be a pathlib.Path object.")
+
+def _raise_keys_not_valid(data_info, sheet_names: list[str]):
+    if "sheets_to_read" not in data_info:
+        raise KeyError("The data_info dictionary must contain the key 'sheets_to_read'.")
+    
+    for sheet_name in sheet_names:
+        if sheet_name not in data_info["sheets_to_read"]:
+            raise KeyError(f"The data_info dictionary must contain one of {sheet_names}.")
+
+def _raise_data_info_invalid(data_info):
+    if not isinstance(data_info, dict):
+        raise TypeError("The data_info argument must be a dictionary.")

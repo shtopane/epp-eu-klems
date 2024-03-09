@@ -11,16 +11,48 @@ from tests.data_management.mock import mock_eu_klems_data
 EU_KLEMS_FIXTURE_PATH = TEST_DIR / "data_management" / "eu_klems_data_fixture.xlsx"
 
 @pytest.fixture(scope="module", autouse=True)
-def setup_session(request):
+def create_mock_data(request):
+    print("Creating mock data")
     mock_eu_klems_data()
-    # def teardown_session():
-    #     print("Tearing down the session")
-    #     os.remove(EU_KLEMS_FIXTURE_PATH)
-    # request.addfinalizer(teardown_session)
+
+    def remove_mock_data():
+        print("Removing mock data")
+        os.remove(EU_KLEMS_FIXTURE_PATH)
+
+    request.addfinalizer(remove_mock_data)
 
 @pytest.fixture()
-def data():
-    return pd.read_excel(EU_KLEMS_FIXTURE_PATH)
+def years_range():
+    return range(1995, 1998)
+
+@pytest.fixture()
+def capital_accounts(data_info):
+    capital_accounts, _ = clean_eu_klems_data.read_data(
+        data_info=data_info,
+        path_to_capital_accounts=EU_KLEMS_FIXTURE_PATH,
+        path_to_national_accounts=EU_KLEMS_FIXTURE_PATH
+    )
+
+    return capital_accounts
+
+@pytest.fixture()
+def national_accounts(data_info):
+    _, national_accounts = clean_eu_klems_data.read_data(
+        data_info=data_info,
+        path_to_capital_accounts=EU_KLEMS_FIXTURE_PATH,
+        path_to_national_accounts=EU_KLEMS_FIXTURE_PATH
+    )
+
+    return national_accounts
+
+@pytest.fixture()
+def growth_accounts(data_info):
+    growth_accounts = clean_eu_klems_data.read_growth_accounts(
+        data_info=data_info,
+        path_to_growth_accounts=EU_KLEMS_FIXTURE_PATH
+    )
+
+    return growth_accounts
 
 
 @pytest.fixture()
@@ -108,30 +140,66 @@ def test_read_growth_accounts_capital_path_not_valid(data_info):
             path_to_growth_accounts="banana"
         )
 
-# def test_clean_data_dropna(data, data_info):
-#     data_clean = clean_eu_klems_data(data, data_info)
-#     assert not data_clean.isna().any(axis=None)
+@pytest.mark.parametrize("raw", [None, 1, 1.0, True, False, "banana", []])
+def test_clean_and_reshape_eu_klems_invalid_data(raw, data_info):
+    with pytest.raises(BaseException):
+        clean_eu_klems_data.clean_and_reshape_eu_klems(
+            raw=raw, 
+            data_info=data_info,
+        )
 
+def test_clean_and_reshape_eu_klems_return_type(capital_accounts, data_info, years_range):
+    capital_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=capital_accounts,
+        data_info=data_info,
+        years=years_range
+    )
+    assert type(capital_accounts_clean) == pd.DataFrame
 
-# def test_clean_data_categorical_columns(data, data_info):
-#     data_clean = clean_eu_klems_data(data, data_info)
-#     for cat_col in data_info["categorical_columns"]:
-#         renamed_col = data_info["column_rename_mapping"].get(cat_col, cat_col)
-#         assert data_clean[renamed_col].dtype == "category"
+def test_clean_and_reshape_eu_klems_dropna(capital_accounts, data_info, years_range):
+    capital_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=capital_accounts,
+        data_info=data_info,
+        years=years_range
+    )
+    assert not capital_accounts_clean.isna().any(axis=None)
 
+def test_clean_and_reshape_eu_klems_categorical_columns(capital_accounts, data_info, years_range):
+    capital_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=capital_accounts,
+        data_info=data_info,
+        years=years_range
+    )
 
-# def test_clean_data_column_rename(data, data_info):
-#     data_clean = clean_eu_klems_data(data, data_info)
-#     old_names = set(data_info["column_rename_mapping"].keys())
-#     new_names = set(data_info["column_rename_mapping"].values())
-#     assert not old_names.intersection(set(data_clean.columns))
-#     assert new_names.intersection(set(data_clean.columns)) == new_names
+    capital_accounts_clean = capital_accounts_clean.reset_index()
+    
+    for cat_col in data_info["categorical_columns"]:
+        renamed_col = data_info["column_rename_mapping"].get(cat_col, cat_col)
+        assert capital_accounts_clean[renamed_col].dtype == "category"
 
+def test_clean_and_reshape_eu_klems_variable_type(capital_accounts, national_accounts, growth_accounts, data_info, years_range):
+    capital_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=capital_accounts,
+        data_info=data_info,
+        years=years_range
+    )
 
-# def test_convert_outcome_to_numerical(data, data_info):
-#     data_clean = clean_eu_klems_data(data, data_info)
-#     outcome_name = data_info["outcome"]
-#     outcome_numerical_name = data_info["outcome_numerical"]
-#     assert outcome_numerical_name in data_clean.columns
-#     assert data_clean[outcome_name].dtype == "category"
-#     assert data_clean[outcome_numerical_name].dtype == np.int8
+    national_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=national_accounts,
+        data_info=data_info,
+        years=years_range
+    )
+
+    growth_accounts_clean = clean_eu_klems_data.clean_and_reshape_eu_klems(
+        raw=growth_accounts,
+        data_info=data_info,
+        years=years_range
+    )
+
+    capital_accounts_variables = data_info["sheets_to_read"]["intangible_analytical_detailed"][0]
+    national_accounts_variables = data_info["sheets_to_read"]["national_accounts"][0]
+    growth_accounts_variables = data_info["sheets_to_read"]["growth_accounts"][0]
+
+    assert capital_accounts_clean[capital_accounts_variables].dtypes == np.float64
+    assert national_accounts_clean[national_accounts_variables].dtypes == np.float64
+    assert growth_accounts_clean[growth_accounts_variables].dtypes == np.float64

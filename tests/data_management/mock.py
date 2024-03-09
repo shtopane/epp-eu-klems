@@ -6,6 +6,7 @@ import pandas as pd
 from measuring_intangible_capital.config import (
     ALL_COUNTRIES,
     ALL_COUNTRY_CODES_MAP,
+    RNG_FOR_TESTING,
     TEST_DIR,
 )
 
@@ -115,14 +116,11 @@ def _generate_years_data(records: int, min: float, max: float, column_name: str 
             2001: [1, 2, 3],
         }
     """
-    seed = 92595
-    rng = np.random.default_rng(seed=seed)
-
     result_dict = {}
 
     for year in MOCK_YEARS_RANGE:
         name = f"{year}{column_name}" if column_name else f"{year}"
-        data = min + (max - min) * rng.random(records)
+        data = min + (max - min) * RNG_FOR_TESTING.random(records)
         result_dict[name] = data
 
     return result_dict

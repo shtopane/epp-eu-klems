@@ -6,21 +6,16 @@ import re
 
 from measuring_intangible_capital.config import EU_KLEMS_WEBSITE, FILES_TO_DOWNLOAD_NAMES, FILES_TO_EXCLUDE
 
-def _links_not_excluded(href) -> bool:
-    """Filter the links that are not allowed.
-    In our case, we don't use the growth accounts data, so we exclude it from the download.
-    Args:
-        href : the link on the page. Passed by BeautifulSoup.find_all
+def _links_names():
+    """Construct a regular expression to search for specific download links names.
+    Link names are stored into the FILES_TO_DOWNLOAD_NAMES list.
 
     Returns:
-        bool : whether the given href is allowed or not.
+        Pattern[AnyStr@compile]: Regular expression pattern to match the download links names
     """
-    return href and not re.compile('|'.join(FILES_TO_EXCLUDE)).search(href)
-
-def _links_names():
     return re.compile('|'.join(FILES_TO_DOWNLOAD_NAMES))
 
-def _clear_file_name(href: str, country_code: str) -> str:
+def _extract_file_name_from_href(href: str, country_code: str) -> str:
     """Extract the file name from the URL and clean it.
     Example:
         https://www.dropbox.com/s/5usiqokdj2orzlv/SK_intangible%20analytical.xlsx?dl=1 -> intangible_analytical.xlsx
@@ -71,7 +66,7 @@ def get_urls_file_names_by_country(
         if current_href is not None and not current_href.startswith("#"):
             if country_code in current_href:
                 country_urls.append(current_href)
-                file_name = _clear_file_name(current_href, country_code)
+                file_name = _extract_file_name_from_href(current_href, country_code)
                 file_names.append(file_name)
 
     return country_urls, file_names

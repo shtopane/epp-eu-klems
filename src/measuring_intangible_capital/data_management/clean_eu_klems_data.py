@@ -58,7 +58,7 @@ def read_growth_accounts(data_info: dict, path_to_growth_accounts: Path) -> list
     return growth_accounts_dfs
 
 def clean_and_reshape_eu_klems(
-    raw: list[pd.DataFrame], data_info: dict
+    raw: list[pd.DataFrame], data_info: dict, years: range
 ) -> pd.DataFrame:
     """Clean and reshape the EU KLEMS data set.
 
@@ -78,7 +78,7 @@ def clean_and_reshape_eu_klems(
         data.append(data_clean)
     
     df = _concat_eu_klems_data(dfs=data)
-    df = _transform_years_columns(df=df, years=range(1995, 2020))
+    df = _transform_years_columns(df=df, years=years)
 
     df["variable_name"] = _rename_variable_category(sr=df["variable_name"], category_names=data_info["variable_name_mapping"])
     df = _pivot_investment_level_to_concrete_investment_categories(df)

@@ -23,7 +23,7 @@ from measuring_intangible_capital.data_management.clean_eu_klems_data import (
 
 clean_data_deps = {
     "scripts": Path("clean_eu_klems_data.py"),
-    "data_info": SRC / "data_management" / "eu_klems_data_info.yaml",
+    "data_info": SRC / "data_management" / "eu_klems_data_info.yaml"
 }
 
 for country in ALL_COUNTRY_CODES:
@@ -42,14 +42,16 @@ for country in ALL_COUNTRY_CODES:
         path_to_capital_accounts = Path(depends_on[f"data_{country}"]["intangible_analytical"])
         path_to_national_accounts = Path(depends_on[f"data_{country}"]["national_accounts"])
         
+        years_for_analysis = range(1995, 2020)
+
         capital_accounts_raw, national_accounts_raw = read_data(
             data_info=data_info, 
             path_to_capital_accounts=path_to_capital_accounts,
             path_to_national_accounts=path_to_national_accounts
         )
        
-        capital_accounts_clean = clean_and_reshape_eu_klems(capital_accounts_raw, data_info)
-        national_accounts_clean = clean_and_reshape_eu_klems(national_accounts_raw, data_info)
+        capital_accounts_clean = clean_and_reshape_eu_klems(capital_accounts_raw, data_info, years=years_for_analysis)
+        national_accounts_clean = clean_and_reshape_eu_klems(national_accounts_raw, data_info, years=years_for_analysis)
         
         capital_accounts_clean.to_pickle(path_to_capital_accounts)
         national_accounts_clean.to_pickle(path_to_national_accounts)
@@ -60,7 +62,7 @@ for country in ALL_COUNTRY_CODES:
                 data_info=data_info, 
                 path_to_growth_accounts=path_to_growth_accounts
             )
-            growth_accounts_clean = clean_and_reshape_eu_klems(growth_accounts, data_info)
+            growth_accounts_clean = clean_and_reshape_eu_klems(growth_accounts, data_info, years=years_for_analysis)
             growth_accounts_clean.to_pickle(path_to_growth_accounts)
         else:
             growth_accounts_clean = pd.DataFrame()

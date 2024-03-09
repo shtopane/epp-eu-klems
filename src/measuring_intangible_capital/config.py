@@ -138,12 +138,6 @@ LABOUR_COMPOSITION_COLUMNS = [
 MPF_COLUMN = "mfp"
 LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]
 
-LABOUR_COMPOSITION_COLOR_MAP = {
-    "intangible": "royalblue",
-    "labour_composition": "gray",
-    "tangible_ICT": "lightsteelblue",
-    "tangible_nonICT": "darkgray",
-    "mfp": "lavender",
-}
+LABOUR_COMPOSITION_PLOT_COLORS = ["royalblue", "gray", "lightsteelblue", "darkgray", "lavender"]
 
 __all__ = ["BLD", "SRC", "TEST_DIR"]

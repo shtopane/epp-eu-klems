@@ -10,6 +10,7 @@ from measuring_intangible_capital.config import (
     INTANGIBLE_DETAIL_CATEGORIES_TYPE,
     LABOUR_COMPOSITION_COLUMNS,
 )
+from measuring_intangible_capital.error_handling_utilities import _raise_if_variable_none
 
 def get_share_of_intangible_investment_per_gdp(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
@@ -24,8 +25,8 @@ def get_share_of_intangible_investment_per_gdp(
     Returns:
         pd.DataFrame: investment levels and shares of intangible investment.
     """
-    _raise_data_none(capital_accounts, "capital_accounts")
-    _raise_data_none(national_accounts, "national_accounts")
+    _raise_if_variable_none(capital_accounts, "capital_accounts")
+    _raise_if_variable_none(national_accounts, "national_accounts")
     _raise_data_invalid(capital_accounts, "capital_accounts")
     _raise_data_invalid(national_accounts, "national_accounts")
     _raise_data_wrong_columns(capital_accounts, INTANGIBLE_DETAIL_CATEGORIES, "capital_accounts")
@@ -50,9 +51,9 @@ def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: 
     Returns:
         pd.DataFrame: The composition of value added.
     """
-    _raise_country_code_none(country_code)
+    _raise_if_variable_none(country_code, "country_code")
     _raise_country_code_invalid(country_code)
-    _raise_data_none(growth_accounts, "growth_accounts")
+    _raise_if_variable_none(growth_accounts, "growth_accounts")
     _raise_data_invalid(growth_accounts, "growth_accounts")
     _raise_data_wrong_columns(growth_accounts, LABOUR_COMPOSITION_COLUMNS, "growth_accounts")
     
@@ -167,7 +168,7 @@ def _aggregate_intangible_investment(
         pd.Series: The aggregate category of intangible investment for a given year.
 
     """
-    _raise_aggregate_mode_not_passed(mode)
+    _raise_if_variable_none(mode, "mode")
     _raise_aggregate_mode_invalid(mode)
 
     index: INTANGIBLE_DETAIL_CATEGORIES_TYPE = None
@@ -191,10 +192,6 @@ def _raise_aggregate_mode_invalid(mode):
     if mode not in INTANGIBLE_AGGREGATE_CATEGORIES:
         raise ValueError("Invalid mode")
 
-def _raise_aggregate_mode_not_passed(mode):
-    if mode is None:
-        raise ValueError("Mode is None")
-
 def _raise_data_wrong_columns(data, columns: list[str], name: str):
     if not all(column in data.columns for column in columns):
         raise ValueError(f"{name} has the wrong columns")
@@ -203,15 +200,7 @@ def _raise_data_invalid(data, name):
     if not isinstance(data, pd.DataFrame):
         raise ValueError(f"{name} is not a pandas DataFrame")
 
-def _raise_data_none(data, name: str):
-    if data is None:
-        raise ValueError(f"{name} is None")
-
 def _raise_country_code_invalid(country_code):
     if country_code not in ALL_COUNTRY_CODES:
         raise ValueError(f"Country code {country_code} is not valid")
-
-def _raise_country_code_none(country_code):
-    if country_code is None:
-        raise ValueError("Country code is None")
 

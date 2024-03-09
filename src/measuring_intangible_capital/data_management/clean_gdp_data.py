@@ -8,7 +8,7 @@ from measuring_intangible_capital.data_management.utilities import clean_data
 
 def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     """Read the data from the World Bank.
-    Read the first N rows for each country in the analysis. End rows are metadata.
+    Read the first N rows for each country in the analysis.
     Args:
         data_info (dict): yaml file with information on the data set.
 
@@ -20,6 +20,15 @@ def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     )
     return df
 
+def clean_gdp_per_capita(raw: pd.DataFrame, data_info: dict):
+    df = clean_data(raw, data_info)
+    df = _rename_year_columns(df)
+    df = _make_year_separate_column(df)
+
+    df["country_code"] = _rename_country_code(df["country_code"])
+    df = df.set_index(["country_code", "year"])
+
+    return df
 
 def _rename_year_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Rename the year columns to only include the year. (2000 [YR2000] -> 2000)
@@ -32,7 +41,7 @@ def _rename_year_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df.rename(columns=mapper)
 
 
-def _rename_country_codes(sr: pd.Series) -> pd.Series:
+def _rename_country_code(sr: pd.Series) -> pd.Series:
     """Rename the country codes to match our country codes.
     Args:
       df (pd.Series): The column with the country codes.
@@ -42,7 +51,7 @@ def _rename_country_codes(sr: pd.Series) -> pd.Series:
     # TODO: Check if this is the right column(entries should be the same length)
     return sr.map(ALL_COUNTRY_CODES_MAP)
 
-def _make_years_separate_column(df: pd.DataFrame) -> pd.DataFrame:
+def _make_year_separate_column(df: pd.DataFrame) -> pd.DataFrame:
     """Make the years a separate column by melting the data set.
     Args:
       df (pd.DataFrame): The data frame.
@@ -50,14 +59,5 @@ def _make_years_separate_column(df: pd.DataFrame) -> pd.DataFrame:
       pd.DataFrame: The data frame with the years as a separate column.
     """
     df_melted =  df.melt(id_vars=["country_code"], var_name="year", value_name="gdp_per_capita")
-    df_melted["year"] = df_melted["year"].astype(int)
+    df_melted["year"] = df_melted["year"].astype(pd.Int16Dtype())
     return df_melted
-
-def clean_gdp_per_capita(raw: pd.DataFrame, data_info: dict):
-    df = clean_data(raw, data_info)
-    df = _rename_year_columns(df)
-    df["country_code"] = _rename_country_codes(df["country_code"])
-    df = _make_years_separate_column(df)
-    df = df.set_index(["country_code", "year"])
-
-    return df

@@ -4,8 +4,6 @@ import pandas as pd
 
 from measuring_intangible_capital.config import BLD, EU_KLEMS_DATA_DOWNLOAD_PATH
 from measuring_intangible_capital.data_management.utilities import clean_data
-from measuring_intangible_capital.utilities import read_yaml
-
 
 def read_data(data_info: dict, country_code: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read investment and national accounts data from the EU KLEMS data set.
@@ -79,21 +77,35 @@ def clean_and_reshape_eu_klems(
         data_clean = data_clean.set_index(["industry_code"])
         data.append(data_clean)
     
-    data = _concat_eu_klems_data(data)
+    df = _concat_eu_klems_data(dfs=data)
+    df = _transform_years_columns(df=df, years=range(1995, 2020))
 
-    years = range(1995, 2020)
-    data_merged = _transform_years_columns(data, years)
-
-    data_merged["year"] = data_merged["year"].astype(pd.Int32Dtype())
-
-    data_merged.index = data_merged.index.astype(pd.CategoricalDtype())
-
-    data_merged["variable_name"] = _rename_variable_category(data_merged["variable_name"], data_info["variable_name_mapping"])
+    df["variable_name"] = _rename_variable_category(sr=df["variable_name"], category_names=data_info["variable_name_mapping"])
+    df = _pivot_investment_level_to_concrete_investment_categories(df)
     
-    data_pivot = data_merged.pivot_table("investment_level", index=["industry_code", "year", "country_code"], columns="variable_name", observed=True)
-    data_pivot = data_pivot.round(3)
-   
-    return data_pivot
+    return df
+
+def _pivot_investment_level_to_concrete_investment_categories(df: pd.DataFrame) -> pd.DataFrame:
+    """Pivot the investment_level column to investment categories as columns.
+    Investment categories are the variable_name column.
+    Values for the investment categories are the investment_level column.
+    Finally, round all values to 3 decimal places.
+
+    The investment categories can be seen in the data_info.yaml file.
+    Args:
+        df (pd.DataFrame): The data set.
+    Returns:
+        pd.DataFrame: The pivoted data set.
+    """
+    df =  df.pivot_table(
+        values="investment_level", 
+        index=["industry_code", "year", "country_code"], 
+        columns="variable_name", 
+        observed=True
+    )
+    df.round(3)
+
+    return df
 
 def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
     """Concatenate all sheets of data into one DataFrame.
@@ -115,13 +127,13 @@ def _concat_eu_klems_data(dfs: list[pd.DataFrame]) -> pd.DataFrame:
 
 
 def _transform_years_columns(
-    data: pd.DataFrame, years: range, var_name="year", value_name="investment_level"
+    df: pd.DataFrame, years: range, var_name="year", value_name="investment_level"
 ) -> pd.DataFrame:
     """Transform the data set from wide to long format based on the years columns.
     The dataset has values under every year column. The returned data set has a year column and the values
     for each each year are stacked under the investment_level column.
     Args:
-        data (pd.DataFrame): The data set.
+        df (pd.DataFrame): The data set.
         years (range): years from to range (2000, 2020) for example
         var_name (str, optional): The name of the variable column passed to the ``melt`` method. Defaults to "year".
         value_name (str, optional): The name of the value column passed to the ``melt`` method. Defaults to "investment_level".
@@ -130,7 +142,7 @@ def _transform_years_columns(
     """
     years_as_str = list(map(str, years))
 
-    data = data.melt(
+    df = df.melt(
         value_vars=years_as_str,
         value_name=value_name,
         var_name=var_name,
@@ -138,7 +150,9 @@ def _transform_years_columns(
         ignore_index=False,
     )
 
-    return data
+    df["year"] = df["year"].astype(pd.Int16Dtype())
+
+    return df
 
 def _rename_variable_category(sr: pd.Series, category_names: dict) -> pd.Series:
     """Rename variable_name category.

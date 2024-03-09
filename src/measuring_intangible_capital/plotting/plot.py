@@ -59,10 +59,6 @@ def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
 
     return fig
 
-
-
-
-
 def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     """Create Figure 2: Intangible investment in the market sector (percent of GDP), 2006
     For all countries.

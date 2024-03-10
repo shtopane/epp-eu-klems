@@ -3,9 +3,8 @@ name: measuring_intangible_capital
 channels: [conda-forge, nodefaults]
 dependencies:
   - conda-lock
-  - ipykernel
-  - jupyterlab
   - pandas
+  - numpy
   - pip >=21.1
   - plotly>=5.13.0
   - pre-commit
@@ -19,6 +18,10 @@ dependencies:
   - python=3.11
   - pyyaml
   - setuptools_scm
-  - statsmodels
-  - toml
-  - pip: [-e ., kaleido, pdbp, bs4]
+  - requests
+  - beautifulsoup4
+  - urllib3
+  - pyarrow
+  - xlsxwriter
+  - openpyxl>=3.1.0
+  - pip: [-e ., kaleido, pdbp]

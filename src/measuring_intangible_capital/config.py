@@ -31,7 +31,6 @@ DATA_CLEAN_PATH = BLD.joinpath("python", "data_clean").resolve()
 BLD_PYTHON = BLD.joinpath("python").resolve()
 
 TEST_DIR = SRC.joinpath("..", "..", "tests").resolve()
-PAPER_DIR = SRC.joinpath("..", "..", "paper").resolve()
 
 # Analysis variables
 COUNTRY_CODES = ["AT", "CZ", "DK", "EL", "SK"]
@@ -75,7 +74,6 @@ COUNTRY_COLOR_MAP = dict(zip(COUNTRIES, PLOT_COLORS_BY_COUNTRY))
 COUNTRY_COLOR_MAP_EXTENDED = dict(
     zip(COUNTRIES_EXTENDED, PLOT_COLORS_BY_COUNTRY_EXTENDED)
 )
-
 
 ALL_COUNTRY_CODES = COUNTRY_CODES + COUNTRY_CODES_EXTENDED
 ALL_COUNTRIES = COUNTRIES + COUNTRIES_EXTENDED
@@ -136,5 +134,3 @@ LABOUR_COMPOSITION_PLOT_COLORS = ["royalblue", "gray", "lightsteelblue", "darkgr
 
 # TESTING: Create a random number generator to be used in test files.
 RNG_FOR_TESTING  = np.random.default_rng(seed=92595)
-
-__all__ = ["BLD", "SRC", "TEST_DIR"]

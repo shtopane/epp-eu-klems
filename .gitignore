@@ -11,6 +11,9 @@ requirements.txt
 .pytask.sqlite3
 .pytask
 
+# pytest
+.coverage
+
 # bld
 bld/
 

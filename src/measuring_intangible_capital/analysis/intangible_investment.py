@@ -11,7 +11,7 @@ from measuring_intangible_capital.config import (
     INTANGIBLE_DETAIL_CATEGORIES_TYPE,
     LABOUR_COMPOSITION_COLUMNS,
 )
-from measuring_intangible_capital.error_handling_utilities import _raise_if_variable_none
+from measuring_intangible_capital.error_handling_utilities import raise_country_code_invalid, raise_variable_none, raise_variable_wrong_type
 
 def get_share_of_intangible_investment_per_gdp(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
@@ -26,10 +26,10 @@ def get_share_of_intangible_investment_per_gdp(
     Returns:
         pd.DataFrame: investment levels and shares of intangible investment.
     """
-    _raise_if_variable_none(capital_accounts, "capital_accounts")
-    _raise_if_variable_none(national_accounts, "national_accounts")
-    _raise_data_wrong_type(capital_accounts, "capital_accounts")
-    _raise_data_wrong_type(national_accounts, "national_accounts")
+    raise_variable_none(capital_accounts, "capital_accounts")
+    raise_variable_none(national_accounts, "national_accounts")
+    raise_variable_wrong_type(capital_accounts, pd.DataFrame, "capital_accounts")
+    raise_variable_wrong_type(national_accounts, pd.DataFrame, "national_accounts")
     _raise_data_wrong_columns(capital_accounts, INTANGIBLE_DETAIL_CATEGORIES, "capital_accounts")
     _raise_data_wrong_columns(national_accounts, ["gdp"], "national_accounts")
 
@@ -55,11 +55,11 @@ def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: 
     Returns:
         pd.DataFrame: The composition of value added.
     """
-    _raise_if_variable_none(country_code, "country_code")
-    _raise_country_code_wrong_type(country_code)
-    _raise_country_code_invalid(country_code)
-    _raise_if_variable_none(growth_accounts, "growth_accounts")
-    _raise_data_wrong_type(growth_accounts, "growth_accounts")
+    raise_variable_none(country_code, "country_code")
+    raise_variable_wrong_type(country_code, str, "country_code")
+    raise_country_code_invalid(country_code, ALL_COUNTRY_CODES)
+    raise_variable_none(growth_accounts, "growth_accounts")
+    raise_variable_wrong_type(growth_accounts, pd.DataFrame, "growth_accounts")
     _raise_data_wrong_columns(growth_accounts, LABOUR_COMPOSITION_COLUMNS, "growth_accounts")
     
     df = pd.DataFrame(index=pd.Index([country_code], name="country_code"))
@@ -89,7 +89,7 @@ def get_intangible_investment_aggregate_types(
     Returns:
         pd.DataFrame: The share of intangible investment for each aggregate category.
     """
-    _raise_if_index_not_equal(capital_accounts, national_accounts)
+    _raise_index_not_equal(capital_accounts, national_accounts)
 
     df = pd.DataFrame(
         index=capital_accounts.index, columns=INTANGIBLE_AGGREGATE_CATEGORIES
@@ -125,7 +125,7 @@ def get_share_of_tangible_investment_per_gdp(
     Returns:
         pd.Series: The share of tangible investment as percent of GDP.
     """
-    _raise_if_index_not_equal(capital_accounts, national_accounts)
+    _raise_index_not_equal(capital_accounts, national_accounts)
 
     df = pd.DataFrame(index=capital_accounts.index)
 
@@ -178,7 +178,7 @@ def _aggregate_intangible_investment(
         pd.Series: The aggregate category of intangible investment for a given year.
 
     """
-    _raise_if_variable_none(mode, "mode")
+    raise_variable_none(mode, "mode")
     _raise_aggregate_mode_invalid(mode)
 
     index: INTANGIBLE_DETAIL_CATEGORIES_TYPE = None
@@ -192,7 +192,7 @@ def _aggregate_intangible_investment(
 
     return sr[index].sum(axis=1)
 
-def _raise_if_index_not_equal(
+def _raise_index_not_equal(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
 ):
     if not capital_accounts.index.equals(national_accounts.index):
@@ -202,19 +202,7 @@ def _raise_aggregate_mode_invalid(mode):
     if mode not in INTANGIBLE_AGGREGATE_CATEGORIES:
         raise ValueError("Invalid mode")
 
-def _raise_data_wrong_columns(data, columns: list[str], name: str):
+def _raise_data_wrong_columns(data: pd.DataFrame, columns: list[str], name: str):
     if not all(column in data.columns for column in columns):
         raise ValueError(f"{name} has the wrong columns")
-
-def _raise_data_wrong_type(data, name):
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError(f"{name} is not a pandas DataFrame")
-
-def _raise_country_code_invalid(country_code):
-    if country_code not in ALL_COUNTRY_CODES:
-        raise ValueError(f"Country code {country_code} is not valid")
-
-def _raise_country_code_wrong_type(country_code):
-    if not isinstance(country_code, str):
-        raise ValueError("country_code is not a string")
 

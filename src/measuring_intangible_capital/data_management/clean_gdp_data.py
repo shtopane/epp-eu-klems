@@ -5,7 +5,7 @@ import pandas as pd
 
 from measuring_intangible_capital.config import ALL_COUNTRY_CODES, ALL_COUNTRY_CODES_MAP
 from measuring_intangible_capital.data_management.utilities import clean_data
-from measuring_intangible_capital.error_handling_utilities import _raise_data_info_invalid, _raise_if_variable_none
+from measuring_intangible_capital.error_handling_utilities import raise_data_info_invalid, raise_variable_none, raise_variable_wrong_type
 
 def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     """Read the data from the World Bank.
@@ -16,10 +16,10 @@ def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     Returns:
         pd.DataFrame: GDP per capita data
     """
-    _raise_if_variable_none(path, "path")
-    _raise_if_variable_none(data_info, "data_info")
-    _raise_data_info_invalid(data_info)
-    _raise_path_invalid(path)
+    raise_variable_none(path, "path")
+    raise_variable_none(data_info, "data_info")
+    raise_data_info_invalid(data_info)
+    raise_variable_wrong_type(path, Path, "path")
 
     df = pd.read_excel(
         path, sheet_name=data_info["sheets_to_read"], nrows=len(ALL_COUNTRY_CODES)
@@ -27,10 +27,10 @@ def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     return df
 
 def clean_gdp_per_capita(raw: pd.DataFrame, data_info: dict):
-    _raise_if_variable_none(raw, "raw")
-    _raise_if_variable_none(data_info, "data_info")
-    _raise_data_info_invalid(data_info)
-    
+    raise_variable_none(raw, "raw")
+    raise_variable_none(data_info, "data_info")
+    raise_data_info_invalid(data_info)
+
     df = clean_data(raw, data_info)
     df = _rename_year_columns(df)
     df = _make_year_separate_column(df)
@@ -71,7 +71,3 @@ def _make_year_separate_column(df: pd.DataFrame) -> pd.DataFrame:
     df_melted =  df.melt(id_vars=["country_code"], var_name="year", value_name="gdp_per_capita")
     df_melted["year"] = df_melted["year"].astype(pd.Int16Dtype())
     return df_melted
-
-def _raise_path_invalid(path):
-    if not isinstance(path, Path):
-        raise ValueError("The input is not a pathlib.Path object.")

@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd
 
 from measuring_intangible_capital.data_management.utilities import clean_data
-from measuring_intangible_capital.error_handling_utilities import _raise_data_info_invalid, _raise_if_variable_none
+from measuring_intangible_capital.error_handling_utilities import raise_data_info_invalid, raise_variable_none, raise_variable_wrong_type
 
 def read_data(data_info: dict, path_to_capital_accounts: Path, path_to_national_accounts: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read investment and national accounts data from the EU KLEMS data set.
@@ -17,10 +17,10 @@ def read_data(data_info: dict, path_to_capital_accounts: Path, path_to_national_
     Returns:
         tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames
     """
-    _raise_data_info_invalid(data_info)
+    raise_data_info_invalid(data_info)
     _raise_keys_not_valid(data_info, ["intangible_analytical_detailed", "national_accounts"])
-    _raise_path_invalid(path_to_capital_accounts, "path_to_capital_accounts")
-    _raise_path_invalid(path_to_national_accounts, "path_to_national_accounts")
+    raise_variable_wrong_type(path_to_capital_accounts, Path, "path_to_capital_accounts")
+    raise_variable_wrong_type(path_to_national_accounts, Path, "path_to_national_accounts")
 
     national_accounts_dfs = []
     capital_accounts_dfs = []
@@ -46,9 +46,9 @@ def read_growth_accounts(data_info: dict, path_to_growth_accounts: Path) -> list
     Returns:
         tuple[list[pd.DataFrame], list[pd.DataFrame]]: list of capital accounts data frames, list of national accounts data frames
     """
-    _raise_data_info_invalid(data_info)
+    raise_data_info_invalid(data_info)
     _raise_keys_not_valid(data_info, ["growth_accounts"])
-    _raise_path_invalid(path_to_growth_accounts, "path_to_growth_accounts")
+    raise_variable_wrong_type(path_to_growth_accounts, Path, "path_to_growth_accounts")
 
     growth_accounts_dfs = []
 
@@ -71,10 +71,12 @@ def clean_and_reshape_eu_klems(
         pd.DataFrame: The cleaned and reshaped data set.
 
     """
-    _raise_if_variable_none(raw, "raw")
-    _raise_if_raw_not_list(raw)
-    _raise_if_raw_empty(raw)
-    _raise_data_info_invalid(data_info)
+    raise_variable_none(raw, "raw")
+    _raise_raw_empty(raw)
+    for raw_df in raw:
+        raise_variable_wrong_type(raw_df, pd.DataFrame, "raw")
+
+    raise_data_info_invalid(data_info)
     
     data = []
 
@@ -90,14 +92,6 @@ def clean_and_reshape_eu_klems(
     df = _pivot_investment_level_to_concrete_investment_categories(df)
     
     return df
-
-def _raise_if_raw_empty(raw):
-    if len(raw) == 0:
-        raise ValueError("The raw argument must not be an empty list.")
-
-def _raise_if_raw_not_list(raw):
-    if not isinstance(raw, list):
-        raise TypeError("The raw argument must be a list of pandas.DataFrame objects.")
 
 def _pivot_investment_level_to_concrete_investment_categories(df: pd.DataFrame) -> pd.DataFrame:
     """Pivot the investment_level column to investment categories as columns.
@@ -206,9 +200,9 @@ def _rename_variable_category(sr: pd.Series, category_names: dict) -> pd.Series:
     """
     return sr.cat.rename_categories(category_names)
 
-def _raise_path_invalid(path, name: str):
-    if not isinstance(path, Path):
-        raise TypeError(f"Argument {name} must be a pathlib.Path object.")
+def _raise_raw_empty(raw):
+    if len(raw) == 0:
+        raise ValueError("The raw argument must not be an empty list.")
 
 def _raise_keys_not_valid(data_info, sheet_names: list[str]):
     if "sheets_to_read" not in data_info:

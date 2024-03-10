@@ -1,13 +1,19 @@
+"""Functions for common error handling scenarios."""
+
+
 def raise_variable_none(variable, variable_name: str) -> None:
     """Raise a ValueError if the variable is None.
-    
+
     Args:
         variable (Any): The variable to check.
         variable_name (str): The name of the variable.
+
     """
     if variable is None:
-        raise ValueError(f"The {variable_name} argument must not be None.")
-    
+        msg = f"The {variable_name} argument must not be None."
+        raise ValueError(msg)
+
+
 def raise_data_info_invalid(data_info):
     """Raise a TypeError if the data_info argument is not a dictionary.
 
@@ -16,9 +22,12 @@ def raise_data_info_invalid(data_info):
 
     Raises:
         TypeError: If the data_info argument is not a dictionary.
+
     """
     if not isinstance(data_info, dict):
-        raise TypeError("The data_info argument must be a dictionary.")
+        msg = "The data_info argument must be a dictionary."
+        raise TypeError(msg)
+
 
 def raise_variable_wrong_type(variable, type, variable_name: str):
     """Raise a ValueError if the variable is not of the specified type.
@@ -30,9 +39,12 @@ def raise_variable_wrong_type(variable, type, variable_name: str):
 
     Raises:
         ValueError: If the variable is not of the specified type.
+
     """
     if not isinstance(variable, type):
-        raise ValueError(f"{variable_name} must be of type {type}.")
+        msg = f"{variable_name} must be of type {type}."
+        raise ValueError(msg)
+
 
 def raise_country_code_invalid(country_code: str, codes: list[str]):
     """Raise a ValueError if the country code is not in a specified list.
@@ -43,8 +55,12 @@ def raise_country_code_invalid(country_code: str, codes: list[str]):
 
     Raises:
         ValueError: If the country code is not in the specified list.
+
     """
     if country_code not in codes:
-        raise ValueError(
+        msg = (
             f"The country code {country_code} is not valid. Please use one of {codes}."
+        )
+        raise ValueError(
+            msg,
         )

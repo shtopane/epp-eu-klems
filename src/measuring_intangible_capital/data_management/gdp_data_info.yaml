@@ -1,10 +1,7 @@
 ---
 data_name: gdp_per_capita
-categorical_columns: ['Country Code']
+categorical_columns: [Country Code]
 sheets_to_read: Data
-columns_to_drop:
- - Country Name
- - Series Name
- - Series Code
+columns_to_drop: [Country Name, Series Name, Series Code]
 column_rename_mapping:
- Country Code: country_code
+  Country Code: country_code

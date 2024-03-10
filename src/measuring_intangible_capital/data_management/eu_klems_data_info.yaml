@@ -1,45 +1,39 @@
 ---
-data_names: [intangible_analytical, national_accounts] # which files to read from each country folder
+data_names: [intangible_analytical, national_accounts]  # which files to read from each country folder
 sheets_to_read:
-  intangible_analytical_detailed: [
+  intangible_analytical_detailed:
     # Investments
-    'I_Soft_DB', # Computer software and databases
-    'I_RD',  # Research and development
-    'I_OIPP', # Entertainment, literary and artistic originals
-    'I_NFP',  # New product development costs in the financial industry
-    'I_Design', # Design
-    'I_OrgCap', # Organizational capital
-    'I_Brand', # Brand
-    'I_Train', # Training
-    'I_TangNRes' # Total tangible assets, excluding non residential buildings
-    ]
-  intangible_analytical_aggregate: [
-    'I_Soft_DB',
-    'I_Innovprop', 
-    'I_EconComp'
-  ]
-  national_accounts: [
-    'VA_CP',
-    'H_EMP',
-    'H_EMPE',
-    'COMP'
-  ]
-  growth_accounts: [
-    'LAB',
-    'CAP',
-    'LP1_G',
-    'VAConH',
-    'LP1ConLC',
-    'LP1ConTangNICT',
-    'LP1ConTangICT',
-    'LP1ConIntang',
-    'LP1ConTFP'
-  ]
-
-categorical_columns: ['nace_r2_code', 'geo_code']
-columns_to_drop:
- - geo_name
- - nace_r2_name
+    - I_Soft_DB
+                 # Computer software and databases
+    - I_RD
+             # Research and development
+    - I_OIPP
+              # Entertainment, literary and artistic originals
+    - I_NFP
+              # New product development costs in the financial industry
+    - I_Design
+                # Design
+    - I_OrgCap
+                # Organizational capital
+    - I_Brand
+               # Brand
+    - I_Train
+               # Training
+    - I_TangNRes  # Total tangible assets, excluding non residential buildings
+  intangible_analytical_aggregate: [I_Soft_DB, I_Innovprop, I_EconComp]
+  national_accounts: [VA_CP, H_EMP, H_EMPE, COMP]
+  growth_accounts:
+    - LAB
+    - CAP
+    - LP1_G
+    - VAConH
+    - LP1ConLC
+    - LP1ConTangNICT
+    - LP1ConTangICT
+    - LP1ConIntang
+    - LP1ConTFP
+categorical_columns: [nace_r2_code, geo_code]
+columns_to_drop: [geo_name, nace_r2_name]
 variable_name_mapping:
   # Aggregate components
   I_Innovprop: intellectual_property
@@ -47,7 +41,7 @@ variable_name_mapping:
   # Computerized Information
   I_Soft_DB: software_and_databases
   I_RD: research_and_development
-  
+
   # Intangible Assets national accounts
   I_OIPP: entertainment_and_artistic
   I_NFP: new_financial_product
@@ -68,9 +62,9 @@ variable_name_mapping:
   COMP: compensation_of_employees
 
   # Growth accounts: Contributions to value added growth
-  LAB: labour_compensation # just labour compensation(in millions)
-  CAP: capital_compensation # just capital compensation(in millions)
-  LP1_G: labour_productivity # Growth rate of value added per hour worked, delta log
+  LAB: labour_compensation  # just labour compensation(in millions)
+  CAP: capital_compensation  # just capital compensation(in millions)
+  LP1_G: labour_productivity  # Growth rate of value added per hour worked, delta log
   VAConH: hours_worked
   LP1ConLC: labour_composition
   LP1ConTangNICT: tangible_nonICT

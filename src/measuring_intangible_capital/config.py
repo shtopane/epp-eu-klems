@@ -72,7 +72,7 @@ PLOT_COLORS_BY_COUNTRY_EXTENDED = [
 
 COUNTRY_COLOR_MAP = dict(zip(COUNTRIES, PLOT_COLORS_BY_COUNTRY))
 COUNTRY_COLOR_MAP_EXTENDED = dict(
-    zip(COUNTRIES_EXTENDED, PLOT_COLORS_BY_COUNTRY_EXTENDED)
+    zip(COUNTRIES_EXTENDED, PLOT_COLORS_BY_COUNTRY_EXTENDED),
 )
 
 ALL_COUNTRY_CODES = COUNTRY_CODES + COUNTRY_CODES_EXTENDED
@@ -82,9 +82,8 @@ ALL_COUNTRY_CODES_MAP = {**COUNTRY_CODES_MAP, **COUNTRY_CODES_MAP_EXTENDED}
 ALL_PLOT_COLORS_BY_COUNTRY = PLOT_COLORS_BY_COUNTRY + PLOT_COLORS_BY_COUNTRY_EXTENDED
 ALL_COUNTRY_CODES_LESS_SK = COUNTRY_CODES_LESS_SK + COUNTRY_CODES_EXTENDED
 
-"""Columns on investment which make up intangible investment. 
-Each of this type is aggregated up to @see INTANGIBLE_AGGREGATE_CATEGORIES
-"""
+# Columns on investment which make up intangible investment.
+# Each of this type is aggregated up to @see INTANGIBLE_AGGREGATE_CATEGORIES
 INTANGIBLE_DETAIL_CATEGORIES = [
     "brand",
     "design",
@@ -106,8 +105,7 @@ INTANGIBLE_DETAIL_CATEGORIES_TYPE = Literal[
     "software_and_databases",
     "training",
 ]
-
-"""Columns on intangible investment as classified by CHS (2005)"""
+# Columns on intangible investment as classified by CHS (2005)
 INTANGIBLE_AGGREGATE_CATEGORIES = [
     "computerized_information",
     "innovative_property",
@@ -115,7 +113,9 @@ INTANGIBLE_AGGREGATE_CATEGORIES = [
 ]
 
 INTANGIBLE_AGGREGATE_CATEGORIES_TYPE = Literal[
-    "computerized_information", "innovative_property", "economic_competencies"
+    "computerized_information",
+    "innovative_property",
+    "economic_competencies",
 ]
 
 CAPITAL_ACCOUNT_INDUSTRY_CODE = "MARKT"
@@ -128,9 +128,15 @@ LABOUR_COMPOSITION_COLUMNS = [
     "tangible_nonICT",
 ]
 MPF_COLUMN = "mfp"
-LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]
+LABOUR_COMPOSITION_COLUMNS_EXTENDED = [*LABOUR_COMPOSITION_COLUMNS, MPF_COLUMN]
 
-LABOUR_COMPOSITION_PLOT_COLORS = ["royalblue", "gray", "lightsteelblue", "darkgray", "lavender"]
+LABOUR_COMPOSITION_PLOT_COLORS = [
+    "royalblue",
+    "gray",
+    "lightsteelblue",
+    "darkgray",
+    "lavender",
+]
 
 # TESTING: Create a random number generator to be used in test files.
-RNG_FOR_TESTING  = np.random.default_rng(seed=92595)
+RNG_FOR_TESTING = np.random.default_rng(seed=92595)

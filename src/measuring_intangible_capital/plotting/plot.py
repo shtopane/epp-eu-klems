@@ -1,17 +1,16 @@
 """Functions plotting results."""
 
-import plotly.express as px
-import plotly.graph_objects as go
+import math
 
 import pandas as pd
-import math
+import plotly.express as px
 
 from measuring_intangible_capital.config import (
     COUNTRY_COLOR_MAP,
     COUNTRY_COLOR_MAP_EXTENDED,
     INTANGIBLE_AGGREGATE_CATEGORIES,
-    LABOUR_COMPOSITION_PLOT_COLORS,
     LABOUR_COMPOSITION_COLUMNS_EXTENDED,
+    LABOUR_COMPOSITION_PLOT_COLORS,
     PLOT_COLORS_AGGREGATE_CATEGORIES,
 )
 from measuring_intangible_capital.utilities import (
@@ -32,13 +31,11 @@ def plot_share_intangibles_for_main_countries(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
-    fig = _plot_share_intangibles_for_countries(
+    return _plot_share_intangibles_for_countries(
         df=df,
         country_color_map=COUNTRY_COLOR_MAP,
         mode="main",
     )
-
-    return fig
 
 
 def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
@@ -51,13 +48,12 @@ def plot_share_intangibles_for_extended_countries(df: pd.DataFrame):
     Returns:
         Figure: the plotly figure
     """
-    fig = _plot_share_intangibles_for_countries(
+    return _plot_share_intangibles_for_countries(
         df=df,
         country_color_map=COUNTRY_COLOR_MAP_EXTENDED,
         mode="extended",
     )
 
-    return fig
 
 def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
     """Create Figure 2: Intangible investment in the market sector (percent of GDP), 2006
@@ -91,15 +87,16 @@ def plot_share_intangible_of_gdp_by_type(df: pd.DataFrame):
 
     fig.update_layout(
         _default_fig_layout(
-            title="Intangible investment in the market sector (percent of GDP), 2006"
-        )
+            title="Intangible investment in the market sector (percent of GDP), 2006",
+        ),
     )
 
     return fig
 
 
 def plot_share_tangible_to_intangible(
-    intangible_df: pd.DataFrame, tangible_df: pd.DataFrame
+    intangible_df: pd.DataFrame,
+    tangible_df: pd.DataFrame,
 ):
     """Create Figure 3: Intangible and tangible investment in the market sector (percent of GDP), 2006
     For all countries.
@@ -134,15 +131,15 @@ def plot_share_tangible_to_intangible(
 
     fig.update_layout(
         _default_fig_layout(
-            title="Intangible to tangible investment (percent of GDP), 2006"
-        )
+            title="Intangible to tangible investment (percent of GDP), 2006",
+        ),
     )
     return fig
 
 
 def plot_composition_of_labour_productivity(df: pd.DataFrame):
     """Create Figure 4a: Contribution of inputs to labour productivity growth, annual average (percent), 1995-2006
-    For all countries
+    For all countries.
 
     Args:
         df (pd.DataFrame):  data set containing intangible, labour_composition, tangible_ICT, tangible_nonICT and mfp columns for all countries
@@ -155,12 +152,12 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
 
     df_plotting = _data_labour_productivity_bar_chart(
         df=df,
-        value_vars=LABOUR_COMPOSITION_COLUMNS_EXTENDED
+        value_vars=LABOUR_COMPOSITION_COLUMNS_EXTENDED,
     )
 
     fig = _labour_productivity_bar_chart(
         df=df_plotting,
-        color_discrete_sequence=LABOUR_COMPOSITION_PLOT_COLORS
+        color_discrete_sequence=LABOUR_COMPOSITION_PLOT_COLORS,
     )
 
     fig.update_layout(
@@ -171,10 +168,11 @@ def plot_composition_of_labour_productivity(df: pd.DataFrame):
     )
     return fig
 
+
 def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
     """Create Figure 4b: Contribution of sub-components of intangibles to labour productivity growth, annual
     average (percent), 1995-2006
-    For all countries
+    For all countries.
 
     Args:
         df (pd.DataFrame): data set containing computerized_information, innovative_property, economic_competencies, columns for all countries
@@ -187,25 +185,26 @@ def plot_sub_components_intangible_labour_productivity(df: pd.DataFrame):
 
     df_plotting = _data_labour_productivity_bar_chart(
         df=df,
-        value_vars=INTANGIBLE_AGGREGATE_CATEGORIES
+        value_vars=INTANGIBLE_AGGREGATE_CATEGORIES,
     )
 
     fig = _labour_productivity_bar_chart(
         df=df_plotting,
-        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES
+        color_discrete_sequence=PLOT_COLORS_AGGREGATE_CATEGORIES,
     )
-    
+
     fig.update_layout(
         _default_fig_layout(
             title="Contribution of sub-components of intangibles to labour productivity growth <br> annual average (percent), 1995-2006",
             yaxis_settings={"dtick": 0.2, "range": [-0.2, 1.0]},
-        )
+        ),
     )
     return fig
 
 
 def plot_intangible_investment_gdp_per_capita(
-    intangible_investment_share: pd.DataFrame, gdp_per_capita: pd.DataFrame
+    intangible_investment_share: pd.DataFrame,
+    gdp_per_capita: pd.DataFrame,
 ):
     """Create Figure 5a: Intangible investment and GDP per capita (2001-04)
     For all countries
@@ -213,10 +212,11 @@ def plot_intangible_investment_gdp_per_capita(
         intangible_investment_share (pd.DataFrame): data set containing share_intangible column for all countries
         gdp_per_capita (pd.DataFrame): data set containing gdp_per_capita column for all countries
     Returns:
-        Figure: the plotly figure
+        Figure: the plotly figure.
     """
     by_country_intangible = intangible_investment_share.groupby(
-        level="country_code", observed=True
+        level="country_code",
+        observed=True,
     )
     by_country_gdp = gdp_per_capita.groupby(level="country_code", observed=True)
 
@@ -260,13 +260,15 @@ def plot_investment_ratio_gdp_per_capita(
         tangible_investment (pd.DataFrame): data set containing share_tangible column for all countries
         gdp_per_capita (pd.DataFrame): data set containing gdp_per_capita column for all countries
     Returns:
-        Figure: the plotly figure
+        Figure: the plotly figure.
     """
     by_country_intangible = intangible_investment.groupby(
-        level="country_code", observed=True
+        level="country_code",
+        observed=True,
     )
     by_country_tangible = tangible_investment.groupby(
-        level="country_code", observed=True
+        level="country_code",
+        observed=True,
     )
     by_country_gdp = gdp_per_capita.groupby(level="country_code", observed=True)
 
@@ -305,15 +307,20 @@ def plot_investment_ratio_gdp_per_capita(
 
     return fig
 
+
 def _default_fig_layout(
     title: str,
     show_legend: bool = True,
-    yaxis_settings: dict = {},
-    xaxis_settings: dict = {},
-    xaxis_title: str = None,
-    yaxis_title: str = None,
+    yaxis_settings: dict | None = None,
+    xaxis_settings: dict | None = None,
+    xaxis_title: str | None = None,
+    yaxis_title: str | None = None,
 ):
-    layout = {
+    if xaxis_settings is None:
+        xaxis_settings = {}
+    if yaxis_settings is None:
+        yaxis_settings = {}
+    return {
         "title": title,
         "title_x": 0.5,
         "title_font_size": 15,
@@ -327,27 +334,30 @@ def _default_fig_layout(
         "autosize": False,
     }
 
-    return layout
-
 
 def _default_plot_bgcolor():
     """Return a default plot background color.
+
     Transparent background.
+
     """
     return "rgba(0,0,0,0)"
 
 
 def _default_xaxis():
     """Return a default x-axis layout.
+
     Show a box around the plot and mirror the axis.
+
     """
     return {"showline": True, "linewidth": 1, "linecolor": "black", "mirror": True}
 
 
 def _default_yaxis():
     """Return a default y-axis layout.
-    Show only horizontal grid lines.
-    Show a box around the plot and mirror the axis.
+
+    Show only horizontal grid lines. Show a box around the plot and mirror the axis.
+
     """
     return {
         **_default_xaxis(),
@@ -357,7 +367,9 @@ def _default_yaxis():
 
 def _default_legend():
     """Return a default legend layout.
+
     Display the legend horizontally at the bottom of the plot.
+
     """
     return {
         "title": None,
@@ -371,17 +383,22 @@ def _default_legend():
 
 def _default_diamond_marker():
     """Makes the data dots in the scatter plot diamond shaped and blue.
+
     The text is displayed on top of the diamond.
+
     """
     return {
-        "marker": dict(symbol="diamond", color="blue"),
+        "marker": {"symbol": "diamond", "color": "blue"},
         "textposition": "top center",
     }
 
-def _data_labour_productivity_bar_chart(df: pd.DataFrame, value_vars: list[str]) -> pd.DataFrame:
-    """Prepare the data for the labour productivity bar chart.
-    Melts the data frame by country name and the value_vars.
-    assigns a name (component).
+
+def _data_labour_productivity_bar_chart(
+    df: pd.DataFrame,
+    value_vars: list[str],
+) -> pd.DataFrame:
+    """Prepare the data for the labour productivity bar chart. Melts the data frame by
+    country name and the value_vars. assigns a name (component).
 
     Args:
         df (pd.DataFrame): data set containing intangible, labour_composition, tangible_ICT, tangible_nonICT and mfp columns for all countries
@@ -389,17 +406,20 @@ def _data_labour_productivity_bar_chart(df: pd.DataFrame, value_vars: list[str])
 
     Returns:
         pd.DataFrame: melted data set
+
     """
-    df_melted = df.melt(
+    return df.melt(
         id_vars="country_name",
         value_vars=value_vars,
         var_name="component",
         value_name="value",
     )
-    
-    return df_melted
 
-def _labour_productivity_bar_chart(df: pd.DataFrame, color_discrete_sequence: list[str]):
+
+def _labour_productivity_bar_chart(
+    df: pd.DataFrame,
+    color_discrete_sequence: list[str],
+):
     """Create a bar chart for the labour productivity composition.
 
     Args:
@@ -408,15 +428,16 @@ def _labour_productivity_bar_chart(df: pd.DataFrame, color_discrete_sequence: li
 
     Returns:
         Figure: the plotly figure
+
     """
-    fig = px.bar(
+    return px.bar(
         df,
         x="country_name",
         y="value",
         color="component",
-        color_discrete_sequence=color_discrete_sequence
+        color_discrete_sequence=color_discrete_sequence,
     )
-    return fig
+
 
 def _plot_share_intangibles_for_countries(
     df: pd.DataFrame,
@@ -425,8 +446,9 @@ def _plot_share_intangibles_for_countries(
 ):
     """Create Figure 1: Share Intangible for selected countries (1995-2006)
     Get data for all countries and plot the share of intangible investment for the selected countries.
+
     Args:
-        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries
+        df (pd.DataFrame): data set containing share_intangible, year, and country_code columns for all countries.
 
     Returns:
         Figure: the plotly figure
@@ -450,7 +472,7 @@ def _plot_share_intangibles_for_countries(
         color_discrete_map=country_color_map,
     )
 
-    fig.update_traces(mode="lines+markers", marker=dict(symbol="square", size=10))
+    fig.update_traces(mode="lines+markers", marker={"symbol": "square", "size": 10})
 
     years = df["year"].unique()
     start_year = years[0]
@@ -462,12 +484,12 @@ def _plot_share_intangibles_for_countries(
         _default_fig_layout(
             title=f"Share Intangible for ({start_year}-{end_year})",
             yaxis_settings={"range": [1, math.ceil(max_share_intangible)]},
-            xaxis_settings=dict(
-                tickmode="array",  # Show every year
-                tickvals=years,  # Array of years from the DataFrame
-                showgrid=False,  # No grid for the x-axis
-                title="Year",
-            ),
+            xaxis_settings={
+                "tickmode": "array",  # Show every year
+                "tickvals": years,  # Array of years from the DataFrame
+                "showgrid": False,  # No grid for the x-axis
+                "title": "Year",
+            },
         ),
     )
 

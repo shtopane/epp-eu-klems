@@ -123,7 +123,6 @@ def test_get_composition_of_value_added_result_smaller_than_original(growth_acco
     growth_accounts=growth_accounts,
     country_code=ALL_COUNTRY_CODES[0]
   )
-  actual_first.set_index("country_code", inplace=True)
 
   growth_accounts_negative_mfp = growth_accounts.copy()
   growth_accounts_negative_mfp["tangible_ICT"] += 10
@@ -132,8 +131,7 @@ def test_get_composition_of_value_added_result_smaller_than_original(growth_acco
     growth_accounts=growth_accounts_negative_mfp,
     country_code=ALL_COUNTRY_CODES[0]
   )
-  actual_second.set_index("country_code", inplace=True)
-
+  
   growth_accounts_max_value = growth_accounts.max().max()
   actual_first_max_value = actual_first.max().max()
   growth_accounts_negative_mfp_max_value = growth_accounts_negative_mfp.max().max()

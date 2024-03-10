@@ -39,15 +39,15 @@ for country in ALL_COUNTRY_CODES:
     ):
         """Clean the data (Python version)."""
         data_info = read_yaml(depends_on["data_info"])
-        path_to_capital_accounts = Path(depends_on[f"data_{country}"]["intangible_analytical"])
-        path_to_national_accounts = Path(depends_on[f"data_{country}"]["national_accounts"])
+        path_to_raw_capital_accounts = Path(depends_on[f"data_{country}"]["intangible_analytical"])
+        path_to_raw_national_accounts = Path(depends_on[f"data_{country}"]["national_accounts"])
         
         years_for_analysis = range(1995, 2020)
 
         capital_accounts_raw, national_accounts_raw = read_data(
             data_info=data_info, 
-            path_to_capital_accounts=path_to_capital_accounts,
-            path_to_national_accounts=path_to_national_accounts
+            path_to_capital_accounts=path_to_raw_capital_accounts,
+            path_to_national_accounts=path_to_raw_national_accounts
         )
        
         capital_accounts_clean = clean_and_reshape_eu_klems(capital_accounts_raw, data_info, years=years_for_analysis)
@@ -57,10 +57,10 @@ for country in ALL_COUNTRY_CODES:
         national_accounts_clean.to_pickle(path_to_national_accounts)
 
         if country != "SK":
-            path_to_growth_accounts = Path(depends_on[f"data_{country}"]["growth_accounts"])
+            path_to_raw_growth_accounts = Path(depends_on[f"data_{country}"]["growth_accounts"])
             growth_accounts = read_growth_accounts(
                 data_info=data_info, 
-                path_to_growth_accounts=path_to_growth_accounts
+                path_to_growth_accounts=path_to_raw_growth_accounts
             )
             growth_accounts_clean = clean_and_reshape_eu_klems(growth_accounts, data_info, years=years_for_analysis)
             growth_accounts_clean.to_pickle(path_to_growth_accounts)

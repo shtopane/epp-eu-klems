@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import Literal
 
+import numpy as np
+
 # DATA Related constants
 FILES_TO_EXCLUDE = ["growth_accounts.xlsx", "growth%20accounts"]
 FILES_TO_DOWNLOAD_NAMES = [
@@ -131,5 +133,8 @@ MPF_COLUMN = "mfp"
 LABOUR_COMPOSITION_COLUMNS_EXTENDED = LABOUR_COMPOSITION_COLUMNS + [MPF_COLUMN]
 
 LABOUR_COMPOSITION_PLOT_COLORS = ["royalblue", "gray", "lightsteelblue", "darkgray", "lavender"]
+
+# TESTING: Create a random number generator to be used in test files.
+RNG_FOR_TESTING  = np.random.default_rng(seed=92595)
 
 __all__ = ["BLD", "SRC", "TEST_DIR"]

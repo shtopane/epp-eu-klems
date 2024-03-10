@@ -16,6 +16,7 @@ from measuring_intangible_capital.config import (
     EU_KLEMS_DATA_DOWNLOAD_PATH,
     EU_KLEMS_FILE_NAMES,
 )
+from measuring_intangible_capital.error_handling_utilities import raise_country_code_invalid, raise_variable_wrong_type
 
 ADD_COUNTRY_NAME_MODE = Literal["main", "extended", "all"]
 
@@ -39,34 +40,6 @@ def read_yaml(path):
             )
             raise ValueError(info) from error
     return out
-
-
-def _add_country_name(df: pd.DataFrame, mode: ADD_COUNTRY_NAME_MODE = "main") -> pd.Series:
-    """Add country name to a data frame based on country codes.
-
-    Args:
-        df (pd.DataFrame): The data frame.
-
-    Returns:
-        pd.Series: The data frame with country name added.
-
-    """
-    if not isinstance(df, pd.DataFrame):
-        raise ValueError("The input is not a pandas DataFrame.")
-
-    if "country_code" not in df.columns:
-        raise ValueError("The data frame does not contain a column 'country_code'.")
-
-    if df["country_code"].empty:
-        return df
-    map_dict = dict(zip(COUNTRY_CODES, COUNTRIES))
-
-    if mode == "extended":
-        map_dict = dict(zip(COUNTRY_CODES_EXTENDED, COUNTRIES_EXTENDED))
-    if mode == "all":
-        map_dict = dict(zip(ALL_COUNTRY_CODES, ALL_COUNTRIES))
-
-    return df["country_code"].map(map_dict)
 
 def add_country_name_main_countries(df: pd.DataFrame) -> pd.Series:
     """Add country name to a data frame for the main countries.
@@ -117,13 +90,9 @@ def get_eu_klems_download_paths(country_code: str) -> dict:
     Returns:
         dict: The dictionary of paths to the EU KLEMS data files for each file name(national_accounts, etc).
     """
-    if not isinstance(country_code, str):
-        raise ValueError("The country code must be a string.")
+    raise_variable_wrong_type(country_code, str, "country_code")
 
-    if country_code not in ALL_COUNTRY_CODES:
-        raise ValueError(
-            f"The country code {country_code} is not valid. Please use one of {ALL_COUNTRY_CODES}."
-        )
+    raise_country_code_invalid(country_code, ALL_COUNTRY_CODES)
 
     file_names = EU_KLEMS_FILE_NAMES
 
@@ -137,7 +106,6 @@ def get_eu_klems_download_paths(country_code: str) -> dict:
         for filename in file_names
     }
 
-
 def get_account_data_path_for_countries(
     key: Literal["capital", "national", "growth"],
     country_codes: list[str] = ALL_COUNTRY_CODES,
@@ -147,3 +115,33 @@ def get_account_data_path_for_countries(
         for country_code in country_codes
     ]
     return paths
+
+def _add_country_name(df: pd.DataFrame, mode: ADD_COUNTRY_NAME_MODE = "main") -> pd.Series:
+    """Add country name to a data frame based on country codes.
+
+    Args:
+        df (pd.DataFrame): The data frame.
+
+    Returns:
+        pd.Series: The data frame with country name added.
+
+    """
+    raise_variable_wrong_type(df, pd.DataFrame, "df")
+
+    _raise_country_code_missing(df)
+
+    if df["country_code"].empty:
+        return df
+    
+    map_dict = dict(zip(COUNTRY_CODES, COUNTRIES))
+
+    if mode == "extended":
+        map_dict = dict(zip(COUNTRY_CODES_EXTENDED, COUNTRIES_EXTENDED))
+    if mode == "all":
+        map_dict = dict(zip(ALL_COUNTRY_CODES, ALL_COUNTRIES))
+
+    return df["country_code"].map(map_dict)
+
+def _raise_country_code_missing(df):
+    if "country_code" not in df.columns:
+        raise ValueError("The data frame does not contain a column 'country_code'.")

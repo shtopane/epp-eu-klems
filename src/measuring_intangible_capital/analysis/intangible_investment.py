@@ -1,5 +1,6 @@
 """Functions to calculate intangible investment."""
 
+import warnings
 import pandas as pd
 
 from measuring_intangible_capital.config import (
@@ -10,6 +11,7 @@ from measuring_intangible_capital.config import (
     INTANGIBLE_DETAIL_CATEGORIES_TYPE,
     LABOUR_COMPOSITION_COLUMNS,
 )
+from measuring_intangible_capital.error_handling_utilities import raise_country_code_invalid, raise_variable_none, raise_variable_wrong_type
 
 def get_share_of_intangible_investment_per_gdp(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
@@ -24,10 +26,10 @@ def get_share_of_intangible_investment_per_gdp(
     Returns:
         pd.DataFrame: investment levels and shares of intangible investment.
     """
-    _raise_data_none(capital_accounts, "capital_accounts")
-    _raise_data_none(national_accounts, "national_accounts")
-    _raise_data_invalid(capital_accounts, "capital_accounts")
-    _raise_data_invalid(national_accounts, "national_accounts")
+    raise_variable_none(capital_accounts, "capital_accounts")
+    raise_variable_none(national_accounts, "national_accounts")
+    raise_variable_wrong_type(capital_accounts, pd.DataFrame, "capital_accounts")
+    raise_variable_wrong_type(national_accounts, pd.DataFrame, "national_accounts")
     _raise_data_wrong_columns(capital_accounts, INTANGIBLE_DETAIL_CATEGORIES, "capital_accounts")
     _raise_data_wrong_columns(national_accounts, ["gdp"], "national_accounts")
 
@@ -37,6 +39,9 @@ def get_share_of_intangible_investment_per_gdp(
     df["share_intangible"] = _calculate_investment_share_in_gdp(
         df["investment_level"], national_accounts["gdp"]
     )
+
+    if (df["share_intangible"] > 100).any():
+        warnings.warn("Share of intangible investment is greater than 100% of GDP")
 
     return df
 
@@ -50,20 +55,23 @@ def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: 
     Returns:
         pd.DataFrame: The composition of value added.
     """
-    _raise_country_code_none(country_code)
-    _raise_country_code_invalid(country_code)
-    _raise_data_none(growth_accounts, "growth_accounts")
-    _raise_data_invalid(growth_accounts, "growth_accounts")
+    raise_variable_none(country_code, "country_code")
+    raise_variable_wrong_type(country_code, str, "country_code")
+    raise_country_code_invalid(country_code, ALL_COUNTRY_CODES)
+    raise_variable_none(growth_accounts, "growth_accounts")
+    raise_variable_wrong_type(growth_accounts, pd.DataFrame, "growth_accounts")
     _raise_data_wrong_columns(growth_accounts, LABOUR_COMPOSITION_COLUMNS, "growth_accounts")
     
-    df = pd.DataFrame(index=[country_code])
+    df = pd.DataFrame(index=pd.Index([country_code], name="country_code"))
 
     for column in LABOUR_COMPOSITION_COLUMNS:
         df[column] = growth_accounts[column].mean()
 
     df["labour_productivity"] = growth_accounts["labour_productivity"].mean()
-    df["mfp"] = df["labour_productivity"] - df[LABOUR_COMPOSITION_COLUMNS].mean().sum()
-    df["country_code"] = [country_code]
+    df["mfp"] = _calculate_mfp(
+        labour_productivity=df["labour_productivity"],
+        labour_composition=df[LABOUR_COMPOSITION_COLUMNS],
+    )
 
     return df
 
@@ -81,7 +89,7 @@ def get_intangible_investment_aggregate_types(
     Returns:
         pd.DataFrame: The share of intangible investment for each aggregate category.
     """
-    _raise_if_index_not_equal(capital_accounts, national_accounts)
+    _raise_index_not_equal(capital_accounts, national_accounts)
 
     df = pd.DataFrame(
         index=capital_accounts.index, columns=INTANGIBLE_AGGREGATE_CATEGORIES
@@ -117,7 +125,7 @@ def get_share_of_tangible_investment_per_gdp(
     Returns:
         pd.Series: The share of tangible investment as percent of GDP.
     """
-    _raise_if_index_not_equal(capital_accounts, national_accounts)
+    _raise_index_not_equal(capital_accounts, national_accounts)
 
     df = pd.DataFrame(index=capital_accounts.index)
 
@@ -131,6 +139,9 @@ def get_share_of_tangible_investment_per_gdp(
     df["share_tangible"] = share_tangible
 
     return df
+
+def _calculate_mfp(labour_productivity: pd.Series, labour_composition: pd.Series):
+    return labour_productivity - labour_composition.sum(axis=1)
 
 def _calculate_investment_share_in_gdp(
     intangible_investment: pd.Series, gdp: pd.Series
@@ -167,7 +178,7 @@ def _aggregate_intangible_investment(
         pd.Series: The aggregate category of intangible investment for a given year.
 
     """
-    _raise_aggregate_mode_not_passed(mode)
+    raise_variable_none(mode, "mode")
     _raise_aggregate_mode_invalid(mode)
 
     index: INTANGIBLE_DETAIL_CATEGORIES_TYPE = None
@@ -181,7 +192,7 @@ def _aggregate_intangible_investment(
 
     return sr[index].sum(axis=1)
 
-def _raise_if_index_not_equal(
+def _raise_index_not_equal(
     capital_accounts: pd.DataFrame, national_accounts: pd.DataFrame
 ):
     if not capital_accounts.index.equals(national_accounts.index):
@@ -191,27 +202,7 @@ def _raise_aggregate_mode_invalid(mode):
     if mode not in INTANGIBLE_AGGREGATE_CATEGORIES:
         raise ValueError("Invalid mode")
 
-def _raise_aggregate_mode_not_passed(mode):
-    if mode is None:
-        raise ValueError("Mode is None")
-
-def _raise_data_wrong_columns(data, columns: list[str], name: str):
+def _raise_data_wrong_columns(data: pd.DataFrame, columns: list[str], name: str):
     if not all(column in data.columns for column in columns):
         raise ValueError(f"{name} has the wrong columns")
-
-def _raise_data_invalid(data, name):
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError(f"{name} is not a pandas DataFrame")
-
-def _raise_data_none(data, name: str):
-    if data is None:
-        raise ValueError(f"{name} is None")
-
-def _raise_country_code_invalid(country_code):
-    if country_code not in ALL_COUNTRY_CODES:
-        raise ValueError(f"Country code {country_code} is not valid")
-
-def _raise_country_code_none(country_code):
-    if country_code is None:
-        raise ValueError("Country code is None")
 

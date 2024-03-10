@@ -39,6 +39,4 @@ for years in labour_productivity_composition_year_ranges:
             dfs.append(df)
         
         labour_productivity_growth_composition = pd.concat(dfs)
-        labour_productivity_growth_composition = labour_productivity_growth_composition.set_index("country_code")
-        
         pd.to_pickle(labour_productivity_growth_composition, path_to_labour_productivity_composition)

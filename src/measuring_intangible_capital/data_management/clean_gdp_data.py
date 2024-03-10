@@ -5,6 +5,7 @@ import pandas as pd
 
 from measuring_intangible_capital.config import ALL_COUNTRY_CODES, ALL_COUNTRY_CODES_MAP
 from measuring_intangible_capital.data_management.utilities import clean_data
+from measuring_intangible_capital.error_handling_utilities import raise_data_info_invalid, raise_variable_none, raise_variable_wrong_type
 
 def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     """Read the data from the World Bank.
@@ -15,12 +16,21 @@ def read_data(path: Path, data_info: dict) -> pd.DataFrame:
     Returns:
         pd.DataFrame: GDP per capita data
     """
+    raise_variable_none(path, "path")
+    raise_variable_none(data_info, "data_info")
+    raise_data_info_invalid(data_info)
+    raise_variable_wrong_type(path, Path, "path")
+
     df = pd.read_excel(
         path, sheet_name=data_info["sheets_to_read"], nrows=len(ALL_COUNTRY_CODES)
     )
     return df
 
 def clean_gdp_per_capita(raw: pd.DataFrame, data_info: dict):
+    raise_variable_none(raw, "raw")
+    raise_variable_none(data_info, "data_info")
+    raise_data_info_invalid(data_info)
+
     df = clean_data(raw, data_info)
     df = _rename_year_columns(df)
     df = _make_year_separate_column(df)
@@ -48,7 +58,6 @@ def _rename_country_code(sr: pd.Series) -> pd.Series:
     Returns:
       pd.Index: The index with the country codes renamed.
     """
-    # TODO: Check if this is the right column(entries should be the same length)
     return sr.map(ALL_COUNTRY_CODES_MAP)
 
 def _make_year_separate_column(df: pd.DataFrame) -> pd.DataFrame:

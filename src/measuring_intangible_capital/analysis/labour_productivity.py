@@ -3,6 +3,7 @@
 import pandas as pd
 
 from measuring_intangible_capital.config import INTANGIBLE_AGGREGATE_CATEGORIES
+from measuring_intangible_capital.error_handling_utilities import raise_variable_none, raise_variable_wrong_type
 
 
 def get_share_of_intangible_sub_components_in_labour_productivity(percentages: list[float]):
@@ -13,13 +14,22 @@ def get_share_of_intangible_sub_components_in_labour_productivity(percentages: l
     Returns:
         pd.Series: The data frame with the share of intangible sub-components in labour productivity.
     """
-    sr = pd.Series()
+    raise_variable_none(percentages, "percentages")
+    raise_variable_wrong_type(percentages, list, "percentages")
+    _raise_length_mismatch(percentages)
+    
+    sr = pd.Series(index = INTANGIBLE_AGGREGATE_CATEGORIES)
 
     for index, column in enumerate(INTANGIBLE_AGGREGATE_CATEGORIES):
         sr[column] = percentages[index]
-        sr.name = column
 
     return sr
+
+def _raise_length_mismatch(percentages):
+    if len(percentages) != len(INTANGIBLE_AGGREGATE_CATEGORIES):
+        raise ValueError(
+            f"The length of the percentages list is {len(percentages)}, but it should be {len(INTANGIBLE_AGGREGATE_CATEGORIES)}"
+        )
 
 
 def get_percent_of_intangible_sub_components_in_labour_productivity():

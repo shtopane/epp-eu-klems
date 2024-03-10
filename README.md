@@ -3,8 +3,8 @@
 # Project for the course Effective Programming Practices, University of Bonn WSe 2023/2024
 
 # Replication of "Measuring intangible capital and its contribution to economic growth in Europe"
-Using the EU KLEMS database.  
-Paper: https://ideas.repec.org/p/ris/eibpap/2009_003.html  
+
+Using the EU KLEMS database. Paper: https://ideas.repec.org/p/ris/eibpap/2009_003.html
 Data: https://euklems-intanprod-llee.luiss.it/
 
 [![image](https://img.shields.io/github/actions/workflow/status/shtopane/measuring_intangible_capital/main.yml?branch=main)](https://github.com/shtopane/measuring_intangible_capital/actions?query=branch%3Amain)

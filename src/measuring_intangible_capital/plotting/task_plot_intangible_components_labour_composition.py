@@ -1,14 +1,14 @@
+"""Task for plotting Figure 4b."""
 from pathlib import Path
 from typing import Annotated
-import pandas as pd
 
+import pandas as pd
 from pytask import Product
 
 from measuring_intangible_capital.config import BLD, BLD_PYTHON
 from measuring_intangible_capital.plotting.plot import (
     plot_sub_components_intangible_labour_productivity,
 )
-
 
 plot_intangible_components_labour_composition_deps = {
     "scripts": [Path("plot.py")],
@@ -22,6 +22,6 @@ def task_plot_intangible_components_labour_composition(
 ):
     """Figure 4b: Plot the share of intangible investment as percent of GDP for all years and countries."""
     df = pd.read_pickle(depends_on["data"])
-    
+
     fig = plot_sub_components_intangible_labour_productivity(df)
     fig.write_image(plot_save_path)

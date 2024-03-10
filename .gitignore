@@ -5,7 +5,6 @@
 *__pycache__
 .mypy_cache
 .DS_Store
-requirements.txt
 
 # pytask
 .pytask.sqlite3

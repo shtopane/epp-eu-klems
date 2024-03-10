@@ -19,7 +19,7 @@ def all_countries_df():
     return pd.DataFrame({"country_code": COUNTRY_CODES})
 
 def test_input_not_data_frame_error():
-    with pytest.raises(ValueError, match=re.escape("The input is not a pandas DataFrame.")):
+    with pytest.raises(ValueError, match="<class 'pandas.core.frame.DataFrame'>"):
       _add_country_name(None)
 
 def test_missing_country_code_error():

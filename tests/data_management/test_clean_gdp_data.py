@@ -52,7 +52,7 @@ def test_read_data_invalid_data_info(data_info):
 
 @pytest.mark.parametrize("path", [[], 1, 1.0, True, False, pd.DataFrame()])
 def test_read_data_invalid_path(path, data_info):
-    with pytest.raises(ValueError, match="not a pathlib.Path"):
+    with pytest.raises(ValueError, match="<class 'pathlib.Path'>"):
         clean_gdp_data.read_data(
             data_info=data_info,
             path=path

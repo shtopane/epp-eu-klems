@@ -92,7 +92,7 @@ def test_read_data_data_info_missing_keys(data_info):
         )
 
 def test_read_data_capital_path_not_valid(data_info):
-    with pytest.raises(TypeError, match="Argument path_to_capital_accounts must be a pathlib.Path object."):
+    with pytest.raises(ValueError, match="<class 'pathlib.Path'>"):
         clean_eu_klems_data.read_data(
             data_info=data_info, 
             path_to_capital_accounts="banana", 
@@ -100,7 +100,7 @@ def test_read_data_capital_path_not_valid(data_info):
         )
 
 def test_read_data_national_path_not_valid(data_info):
-    with pytest.raises(TypeError, match="Argument path_to_national_accounts must be a pathlib.Path object."):
+    with pytest.raises(ValueError, match="<class 'pathlib.Path'>"):
         clean_eu_klems_data.read_data(
             data_info=data_info, 
             path_to_capital_accounts=EU_KLEMS_FIXTURE_PATH,
@@ -132,7 +132,7 @@ def test_read_growth_accounts_data_info_missing_keys(data_info):
         )
 
 def test_read_growth_accounts_capital_path_not_valid(data_info):
-    with pytest.raises(TypeError, match="Argument path_to_growth_accounts must be a pathlib.Path object."):
+    with pytest.raises(ValueError, match="<class 'pathlib.Path'>"):
         clean_eu_klems_data.read_growth_accounts(
             data_info=data_info, 
             path_to_growth_accounts="banana"

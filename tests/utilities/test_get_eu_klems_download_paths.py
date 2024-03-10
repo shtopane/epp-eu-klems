@@ -15,13 +15,26 @@ def test_country_code_not_in_country_codes(country_code):
     with pytest.raises(ValueError, match="is not valid."):
         get_eu_klems_download_paths(country_code)
 
-# TODO: Test that growth_accounts is not in the paths for SK
 @pytest.mark.parametrize("country_code", ALL_COUNTRY_CODES_LESS_SK)
-def test_return_type(country_code):
+def test_return_type_countries_less_SK(country_code):
     result = get_eu_klems_download_paths(country_code)
     
     file_names = list(result.keys())
     assert file_names == EU_KLEMS_FILE_NAMES, "The file names are not correct."
+
+    paths = list(result.values())
+
+    for path in paths:
+        assert country_code in str(path), "The country code is not in the path."
+
+def test_return_type_SK():
+    country_code = "SK"
+    result = get_eu_klems_download_paths(country_code)
+    
+    file_names = list(result.keys())
+    expected_file_names = [file_name for file_name in EU_KLEMS_FILE_NAMES if file_name != "growth_accounts"]
+    
+    assert file_names == expected_file_names, "The file names are not correct."
 
     paths = list(result.values())
 

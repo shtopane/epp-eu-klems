@@ -58,7 +58,6 @@ def _rename_country_code(sr: pd.Series) -> pd.Series:
     Returns:
       pd.Index: The index with the country codes renamed.
     """
-    # TODO: Check if this is the right column(entries should be the same length)
     return sr.map(ALL_COUNTRY_CODES_MAP)
 
 def _make_year_separate_column(df: pd.DataFrame) -> pd.DataFrame:

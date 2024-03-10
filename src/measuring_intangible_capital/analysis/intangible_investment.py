@@ -62,7 +62,7 @@ def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: 
     _raise_data_wrong_type(growth_accounts, "growth_accounts")
     _raise_data_wrong_columns(growth_accounts, LABOUR_COMPOSITION_COLUMNS, "growth_accounts")
     
-    df = pd.DataFrame(index=[country_code])
+    df = pd.DataFrame(index=pd.Index([country_code], name="country_code"))
 
     for column in LABOUR_COMPOSITION_COLUMNS:
         df[column] = growth_accounts[column].mean()
@@ -72,8 +72,6 @@ def get_composition_of_value_added(growth_accounts: pd.DataFrame, country_code: 
         labour_productivity=df["labour_productivity"],
         labour_composition=df[LABOUR_COMPOSITION_COLUMNS],
     )
-
-    df["country_code"] = [country_code]
 
     return df
 
